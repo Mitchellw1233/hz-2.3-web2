@@ -25,12 +25,12 @@ abstract class AbstractBag
     }
 
     /**
-     * @param string $key
+     * @param K $key
      * @param V $default
      *
      * @return V
      */
-    public function get(string $key, $default = null): mixed
+    public function get($key, $default = null)
     {
         return \array_key_exists($key, $this->data) ? $this->data[$key] : $default;
     }
@@ -58,7 +58,7 @@ abstract class AbstractBag
     /**
      * Returns the parameter keys.
      *
-     * @return array<K, V>
+     * @return K[]
      */
     public function keys(): array
     {
@@ -67,19 +67,21 @@ abstract class AbstractBag
 
     /**
      * Returns true if the parameter is defined.
+     *
+     * @param K $key
      */
-    public function has(string $key): bool
+    public function has($key): bool
     {
         return \array_key_exists($key, $this->data);
     }
 
     /**
-     * @param string $key
+     * @param K $key
      * @param V $value
      *
      * @return void
      */
-    public function set(string $key, mixed $value): void
+    public function set($key, $value): void
     {
         $this->data[$key] = $value;
     }
@@ -94,14 +96,18 @@ abstract class AbstractBag
 
     /**
      * Removes a parameter.
+     *
+     * @param K $key
      */
-    public function remove(string $key): void
+    public function remove($key): void
     {
         unset($this->data[$key]);
     }
 
     /**
      * Replaces the current parameters by a new set.
+     *
+     * @param array<K, V> $data
      */
     public function replace(array $data = []): void
     {
