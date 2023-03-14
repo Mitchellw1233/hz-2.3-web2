@@ -1,0 +1,23 @@
+{
+    "name": "slimfony/slimfony",
+    "description": "Symfony, but slim",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Slimfony\\": "src/Slimfony"
+        }
+    },
+    "authors": [
+        {
+            "name": "Mitchellw1233",
+            "email": "mitchellwolters1233@gmail.com"
+        },
+        {
+            "name": "slavjuan",
+            "email": "koenbeerta@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2"
+    }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "slimfonytest/slimfonytest",
+  "description": "Test app for the official Slimfony framework",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Mitchellw1233",
+      "email": "mitchellwolters1233@gmail.com"
+    },
+    {
+      "name": "slavjuan",
+      "email": "koenbeerta@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^8.2"
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../"
+    }
+  ]
+}
