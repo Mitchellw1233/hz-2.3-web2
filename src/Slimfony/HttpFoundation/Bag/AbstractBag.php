@@ -6,17 +6,18 @@ namespace Slimfony\HttpFoundation\Bag;
 use Slimfony\HttpFoundation\Exception\BadRequestException;
 
 /**
- * @template T
+ * @template K of array-key
+ * @template V
  */
 abstract class AbstractBag
 {
     /**
-     * @var T[]
+     * @var array<K, V>
      */
     protected array $data;
 
     /**
-     * @param T[] $data
+     * @param array<K, V> $data
      */
     public function __construct(array $data)
     {
@@ -25,9 +26,9 @@ abstract class AbstractBag
 
     /**
      * @param string $key
-     * @param T $default
+     * @param V $default
      *
-     * @return T
+     * @return V
      */
     public function get(string $key, $default = null): mixed
     {
@@ -37,9 +38,11 @@ abstract class AbstractBag
     /**
      * Returns the parameters.
      *
-     * @param string|null $key The name of the parameter to return or null to get them all
+     * @param K|null $key The name of the parameter to return or null to get them all
+     *
+     * @return array<K, V>
      */
-    public function all(string $key = null): array
+    public function all($key = null): array
     {
         if (null === $key) {
             return $this->data;
@@ -54,6 +57,8 @@ abstract class AbstractBag
 
     /**
      * Returns the parameter keys.
+     *
+     * @return array<K, V>
      */
     public function keys(): array
     {
@@ -70,7 +75,7 @@ abstract class AbstractBag
 
     /**
      * @param string $key
-     * @param T $value
+     * @param V $value
      *
      * @return void
      */
@@ -80,7 +85,7 @@ abstract class AbstractBag
     }
 
     /**
-     * @param T[] $data
+     * @param array<K, V> $data
      */
     public function add(array $data = []): void
     {
