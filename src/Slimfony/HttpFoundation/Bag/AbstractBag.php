@@ -6,17 +6,18 @@ namespace Slimfony\HttpFoundation\Bag;
 use Slimfony\HttpFoundation\Exception\BadRequestException;
 
 /**
- * @template T
+ * @template K of array-key
+ * @template V
  */
 abstract class AbstractBag
 {
     /**
-     * @var T[]
+     * @var array<K, V>
      */
     protected array $data;
 
     /**
-     * @param T[] $data
+     * @param array<K, V> $data
      */
     public function __construct(array $data)
     {
@@ -24,12 +25,12 @@ abstract class AbstractBag
     }
 
     /**
-     * @param string $key
-     * @param T $default
+     * @param K $key
+     * @param V $default
      *
-     * @return T
+     * @return V
      */
-    public function get(string $key, $default = null): mixed
+    public function get($key, $default = null)
     {
         return \array_key_exists($key, $this->data) ? $this->data[$key] : $default;
     }
@@ -37,9 +38,11 @@ abstract class AbstractBag
     /**
      * Returns the parameters.
      *
-     * @param string|null $key The name of the parameter to return or null to get them all
+     * @param K|null $key The name of the parameter to return or null to get them all
+     *
+     * @return array<K, V>
      */
-    public function all(string $key = null): array
+    public function all($key = null): array
     {
         if (null === $key) {
             return $this->data;
@@ -54,6 +57,8 @@ abstract class AbstractBag
 
     /**
      * Returns the parameter keys.
+     *
+     * @return K[]
      */
     public function keys(): array
     {
@@ -62,25 +67,27 @@ abstract class AbstractBag
 
     /**
      * Returns true if the parameter is defined.
+     *
+     * @param K $key
      */
-    public function has(string $key): bool
+    public function has($key): bool
     {
         return \array_key_exists($key, $this->data);
     }
 
     /**
-     * @param string $key
-     * @param T $value
+     * @param K $key
+     * @param V $value
      *
      * @return void
      */
-    public function set(string $key, mixed $value): void
+    public function set($key, $value): void
     {
         $this->data[$key] = $value;
     }
 
     /**
-     * @param T[] $data
+     * @param array<K, V> $data
      */
     public function add(array $data = []): void
     {
@@ -89,14 +96,18 @@ abstract class AbstractBag
 
     /**
      * Removes a parameter.
+     *
+     * @param K $key
      */
-    public function remove(string $key): void
+    public function remove($key): void
     {
         unset($this->data[$key]);
     }
 
     /**
      * Replaces the current parameters by a new set.
+     *
+     * @param array<K, V> $data
      */
     public function replace(array $data = []): void
     {
