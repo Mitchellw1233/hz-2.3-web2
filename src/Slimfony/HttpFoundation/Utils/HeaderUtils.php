@@ -45,13 +45,12 @@ class HeaderUtils
     public static function toString(array $a, string $separator): string
     {
         $parts = [];
-        foreach ($a as $name => $value)
-{
+        foreach ($a as $name => $value) {
             if (true === $value) {
                 $parts[] = $name;
             }
             else {
-                $parts = $name.'='.self::quote($value);
+                $parts[] = $name.'='.self::quote($value);
             }
         }
 
