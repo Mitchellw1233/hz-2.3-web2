@@ -2,8 +2,8 @@
 
 namespace Slimfony\HttpFoundation\Bag;
 
-// TODO: HeaderUtils
 // TODO: Checken of alle abstract functies correct zijn (hier ben ik niet doorheen gekomen)
+use Slimfony\HttpFoundation\Utils\HeaderUtils;
 
 /**
  * @template-extends AbstractBag<string, list<string|null>
