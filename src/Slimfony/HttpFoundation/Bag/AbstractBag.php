@@ -115,10 +115,26 @@ abstract class AbstractBag
     }
 
     /**
+     * Returns true if data contains array
+     *
+     * @param string $key
+     * @param string $value
+     */
+    public function contains(string $key, string $value): bool
+    {
+        return \in_array($value, $this->all($key));
+    }
+
+    /**
      * Returns the number of parameters.
      */
     public function count(): int
     {
         return \count($this->data);
+    }
+
+    public function getIterator(): \ArrayIterator
+    {
+        return new \ArrayIterator($this->data);
     }
 }

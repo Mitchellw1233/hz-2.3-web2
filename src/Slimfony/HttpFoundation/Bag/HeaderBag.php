@@ -2,7 +2,6 @@
 
 namespace Slimfony\HttpFoundation\Bag;
 
-// TODO: Checken of alle abstract functies correct zijn (hier ben ik niet doorheen gekomen)
 use Slimfony\HttpFoundation\Utils\HeaderUtils;
 
 /**
@@ -16,7 +15,7 @@ class HeaderBag extends AbstractBag
     protected array $cacheControl;
 
     /**
-     * @param array $headers
+     * @param array<string, list<string|null>> $headers
      */
     public function __construct(array $headers = [])
     {
@@ -45,6 +44,36 @@ class HeaderBag extends AbstractBag
         }
 
         return $content;
+    }
+
+    /**
+     * @param string $key
+     * @param string|array|null $value
+     *
+     * @return void
+     */
+    public function set($key, $value): void
+    {
+        if ('cache-control' === $key) {
+            $this->cacheControl = $this->parseCacheControl(implode(', ', $this->data[$key]));
+        } elseif (!\is_array($value)) {
+            $this->data[$key] = [$value];
+        } else {
+            $this->data[$key] = $value;
+        }
+    }
+
+    /**
+     * Removes a header.
+     *
+     * @param string $key
+     */
+    public function remove($key): void
+    {
+        unset($this->data[$key]);
+        if ('cache-control' === $key) {
+            $this->cacheControl = [];
+        }
     }
 
     /**
