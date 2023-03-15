@@ -54,6 +54,8 @@ class HeaderBag extends AbstractBag
      */
     public function set($key, $value): void
     {
+        $key = strtolower($key);
+
         if ('cache-control' === $key) {
             $this->cacheControl = $this->parseCacheControl(implode(', ', $this->data[$key]));
         } elseif (!\is_array($value)) {
@@ -70,6 +72,8 @@ class HeaderBag extends AbstractBag
      */
     public function remove($key): void
     {
+        $key = strtolower($key);
+
         unset($this->data[$key]);
         if ('cache-control' === $key) {
             $this->cacheControl = [];
@@ -96,7 +100,7 @@ class HeaderBag extends AbstractBag
      * @param bool|string $value
      * @return void
      */
-    public function addCacheControlDirective(string $key, bool|string $value = true)
+    public function addCacheControlDirective(string $key, bool|string $value = true): void
     {
         $this->cacheControl[$key] = $value;
         $this->set('Cache-Control', $this->getCacheControlHeader());
@@ -106,10 +110,19 @@ class HeaderBag extends AbstractBag
      * @param string $key
      * @return void
      */
-    public function removeCacheControlDirective(string $key)
+    public function removeCacheControlDirective(string $key): void
     {
         unset($this->cacheControl[$key]);
         $this->set('Cache-Control', $this->getCacheControlHeader());
+    }
+
+    /**
+     * @param string $key
+     * @return bool|string|null
+     */
+    public function getCacheControlDirective(string $key): bool|string|null
+    {
+        return $this->cacheControl[$key] ?? null;
     }
 
     /**
