@@ -2,7 +2,6 @@
 
 namespace Slimfony\HttpFoundation\Bag;
 
-// TODO: Checken of alle abstract functies correct zijn (hier ben ik niet doorheen gekomen)
 use Slimfony\HttpFoundation\Utils\HeaderUtils;
 
 /**
@@ -16,7 +15,7 @@ class HeaderBag extends AbstractBag
     protected array $cacheControl;
 
     /**
-     * @param array $headers
+     * @param array<string, list<string|null>> $headers
      */
     public function __construct(array $headers = [])
     {
@@ -49,6 +48,40 @@ class HeaderBag extends AbstractBag
 
     /**
      * @param string $key
+     * @param string|array|null $value
+     *
+     * @return void
+     */
+    public function set($key, $value): void
+    {
+        $key = strtolower($key);
+
+        if ('cache-control' === $key) {
+            $this->cacheControl = $this->parseCacheControl(implode(', ', $this->data[$key]));
+        } elseif (!\is_array($value)) {
+            $this->data[$key] = [$value];
+        } else {
+            $this->data[$key] = $value;
+        }
+    }
+
+    /**
+     * Removes a header.
+     *
+     * @param string $key
+     */
+    public function remove($key): void
+    {
+        $key = strtolower($key);
+
+        unset($this->data[$key]);
+        if ('cache-control' === $key) {
+            $this->cacheControl = [];
+        }
+    }
+
+    /**
+     * @param string $key
      * @param \DateTime|null $default
      * @return \DateTimeInterface|null
      */
@@ -67,7 +100,7 @@ class HeaderBag extends AbstractBag
      * @param bool|string $value
      * @return void
      */
-    public function addCacheControlDirective(string $key, bool|string $value = true)
+    public function addCacheControlDirective(string $key, bool|string $value = true): void
     {
         $this->cacheControl[$key] = $value;
         $this->set('Cache-Control', $this->getCacheControlHeader());
@@ -77,10 +110,19 @@ class HeaderBag extends AbstractBag
      * @param string $key
      * @return void
      */
-    public function removeCacheControlDirective(string $key)
+    public function removeCacheControlDirective(string $key): void
     {
         unset($this->cacheControl[$key]);
         $this->set('Cache-Control', $this->getCacheControlHeader());
+    }
+
+    /**
+     * @param string $key
+     * @return bool|string|null
+     */
+    public function getCacheControlDirective(string $key): bool|string|null
+    {
+        return $this->cacheControl[$key] ?? null;
     }
 
     /**
