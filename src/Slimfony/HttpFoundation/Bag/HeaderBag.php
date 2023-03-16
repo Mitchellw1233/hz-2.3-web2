@@ -22,13 +22,8 @@ class HeaderBag extends AbstractBag
      */
     public function __construct(array $data = [])
     {
-        $headers = [];
-        foreach ($data as $key => $value) {
-            $this->set($key, $value);
-        }
-
-        parent::__construct($headers);
         $this->cacheControl = [];
+        parent::__construct($data);
     }
 
     /**
@@ -56,7 +51,7 @@ class HeaderBag extends AbstractBag
 
     /**
      * @param string $key
-     * @param string|list<string|null> $value
+     * @param list<string|null> $value
      *
      * @return void
      */
@@ -162,5 +157,82 @@ class HeaderBag extends AbstractBag
     {
         $parts = HeaderUtils::split($header, ',=');
         return HeaderUtils::combine($parts);
+    }
+
+    // TODO: Until "@template" fixed
+    /**
+     * @inheritDoc
+     *
+     * @param string $key
+     * @param list<string|null>|null $default
+     *
+     * @return list<string|null>|null
+     */
+    public function get($key, $default = null)
+    {
+        return parent::get($key, $default);
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * @param string|null $key
+     *
+     * @return list<string|null>
+     */
+    public function all($key = null): array
+    {
+        return parent::all($key);
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * @return string[]
+     */
+    public function keys(): array
+    {
+        return parent::keys();
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * @param string $key
+     */
+    public function has($key): bool
+    {
+        return parent::has($key);
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * @param list<string|null> $data
+     */
+    public function add(array $data = []): void
+    {
+        parent::add($data);
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * @param list<string|null> $data
+     */
+    public function replace(array $data = []): void
+    {
+        parent::replace($data);
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * @param string $key
+     * @param list<string|null> $value
+     */
+    public function contains($key, $value): bool
+    {
+        return parent::contains($key, $value);
     }
 }

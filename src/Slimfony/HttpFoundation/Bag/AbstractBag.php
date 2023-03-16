@@ -21,14 +21,18 @@ abstract class AbstractBag
      */
     public function __construct(array $data)
     {
-        $this->data = $data;
+        $this->data = [];
+
+        foreach ($data as $key => $value) {
+            $this->set($key, $value);
+        }
     }
 
     /**
      * @param K $key
      * @param V $default
      *
-     * @return V
+     * @return V|null
      */
     public function get($key, $default = null)
     {
@@ -91,7 +95,9 @@ abstract class AbstractBag
      */
     public function add(array $data = []): void
     {
-        $this->data = \array_replace($this->data, $data);
+        foreach ($data as $key => $value) {
+            $this->set($key, $value);
+        }
     }
 
     /**
@@ -111,18 +117,50 @@ abstract class AbstractBag
      */
     public function replace(array $data = []): void
     {
-        $this->data = $data;
+        $this->data = [];
+        $this->add($this->data);
     }
 
     /**
      * Returns true if data contains array
      *
-     * @param string $key
-     * @param string $value
+     * @param K $key
+     * @param V $value
+     *
+     * @return bool
      */
-    public function contains(string $key, string $value): bool
+    public function contains($key, $value): bool
     {
         return \in_array($value, $this->all($key));
+    }
+
+    /**
+     * Filter key.
+     *
+     * @param K $key
+     * @param int $filter FILTER_* constant
+     *
+     * @see https://php.net/filter-var
+     */
+    public function filter($key, mixed $default = null, int $filter = \FILTER_DEFAULT, mixed $options = []): mixed
+    {
+        $value = $this->get($key, $default);
+
+        // Always turn $options into an array - this allows filter_var option shortcuts.
+        if (!\is_array($options) && $options) {
+            $options = ['flags' => $options];
+        }
+
+        // Add a convenience check for arrays.
+        if (\is_array($value) && !isset($options['flags'])) {
+            $options['flags'] = \FILTER_REQUIRE_ARRAY;
+        }
+
+        if ((\FILTER_CALLBACK & $filter) && !(($options['options'] ?? null) instanceof \Closure)) {
+            throw new \InvalidArgumentException(sprintf('A Closure must be passed to "%s()" when FILTER_CALLBACK is used, "%s" given.', __METHOD__, get_debug_type($options['options'] ?? null)));
+        }
+
+        return filter_var($value, $filter, $options);
     }
 
     /**
