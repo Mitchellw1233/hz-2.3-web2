@@ -13,7 +13,7 @@ use Slimfony\HttpFoundation\Utils\HeaderUtils;
 class HeaderBag extends AbstractBag
 {
     /**
-     * @var array<K, V>
+     * @var array<string, list<string|null>>
      */
     protected array $cacheControl;
 
