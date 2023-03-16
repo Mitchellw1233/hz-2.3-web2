@@ -161,13 +161,15 @@ class Response
             return $this;
         }
 
-        foreach ($this->headers->all() as $name => $values) {
+        foreach ($this->headers->allWithoutCookies() as $name => $values) {
             foreach($values as $value) {
                 header($name.': '.$value, false, $this->statusCode);
             }
         }
 
-        // Cookies
+        foreach ($this->headers->getCookies() as $cookie) {
+            header('Set-Cookie: '.$cookie, false, $this->statusCode);
+        }
 
         if ($informationalResponse) {
             headers_sent($this->statusCode);
