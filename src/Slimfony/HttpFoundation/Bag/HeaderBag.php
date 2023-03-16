@@ -25,7 +25,6 @@ class HeaderBag extends AbstractBag
         $headers = [];
         foreach ($data as $key => $value) {
             $this->set($key, $value);
-            $this->all();
         }
 
         parent::__construct($headers);
