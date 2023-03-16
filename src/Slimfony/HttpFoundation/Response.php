@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Slimfony\HttpFoundation;
 
+use Slimfony\HttpFoundation\Bag\ResponseHeaderBag;
+
 class Response
 {
     public const HTTP_CONTINUE = 100;
@@ -134,7 +136,7 @@ class Response
         511 => 'Network Authentication Required',                             // RFC6585
     ];
 
-    public array $headers;
+    public ResponseHeaderBag $headers;
     protected string $content;
     protected string $version;
 
@@ -145,7 +147,7 @@ class Response
         $this->setContent($content);
         $this->setHeaders($headers);
         $this->setStatusCode($status);
-        $this->setProtocolVersion('1.0');
+        $this->setProtocolVersion('1.1');
     }
 
     public function sendHeaders(): static
@@ -159,8 +161,13 @@ class Response
             return $this;
         }
 
-        // header
-        // cookie
+        foreach ($this->headers->all() as $name => $values) {
+            foreach($values as $value) {
+                header($name.': '.$value, false, $this->statusCode);
+            }
+        }
+
+        // Cookies
 
         if ($informationalResponse) {
             headers_sent($this->statusCode);
@@ -201,19 +208,18 @@ class Response
         $level = \count($status);
         $flags = \PHP_OUTPUT_HANDLER_REMOVABLE | ($flush ? \PHP_OUTPUT_HANDLER_FLUSHABLE : \PHP_OUTPUT_HANDLER_CLEANABLE);
 
-        while ($level-- > $targetLevel && ($s = $status[$level]) && (!isset($s['del']) ? (!isset($s['flags'])) || ($s['flags'] & $flags) === $flags : $s['del']))
-        {
+        while ($level-- > $targetLevel && ($s = $status[$level]) && (!isset($s['del']) ? (!isset($s['flags'])) || ($s['flags'] & $flags) === $flags : $s['del'])) {
             if ($flush) { ob_end_flush(); }
             else { ob_end_clean(); }
         }
     }
 
     /**
-     * @return array
+     * @return array<string, list<string|null>>
      */
     public function getHeaders(): array
     {
-        return $this->headers;
+        return $this->headers->all();
     }
 
     /**
@@ -222,7 +228,7 @@ class Response
      */
     public function setHeaders(array $headers): static
     {
-        $this->headers = $headers;
+        $this->headers->replace($headers);
         return $this;
     }
 
@@ -282,8 +288,81 @@ class Response
         return $this;
     }
 
-    // TODO: setMaxAge
-    // TODO: getMaxAge
+    public function getAge(): int
+    {
+        if (null !== $age = $this->headers->get('Age')) {
+            return (int) $age;
+        }
+
+        return max(time() - (int) $this->getDate()->format('U'), 0);
+    }
+
+    public function setMaxAge(int $value): static
+    {
+        $this->headers->addCacheControlDirective('max-age', (string) $value);
+        return $this;
+    }
+
+    public function getMaxAge(): ?int
+    {
+        if ($this->headers->hasCacheControlDirective('s-maxage')) {
+            return (int) $this->headers->getCacheControlDirective('s-maxage');
+        }
+
+        if ($this->headers->hasCacheControlDirective('max-age')) {
+            return (int) $this->headers->getCacheControlDirective('max-age');
+        }
+
+        if (null !== $expires = $this->getExpires()) {
+            $maxAge = (int) $expires->format('U') - (int) $this->getDate()->format('U');
+            return max($maxAge, 0);
+        }
+
+        return null;
+    }
+
+    public function setDate(\DateTimeInterface $date): static
+    {
+        if ($date instanceof \DateTime) {
+            $date = \DateTimeImmutable::createFromMutable($date);
+        }
+
+        $date = $date->setTimezone(new \DateTimeZone('UTC'));
+        $this->headers->set('Date', $date->format('D, d M Y H:i:s'.' GMT'));
+
+        return $this;
+    }
+
+    public function getDate(): ?\DateTimeInterface
+    {
+        return $this->headers->getDate('Date');
+    }
+
+    public function setExpires(\DateTimeInterface $date = null): static
+    {
+        if (null === $date) {
+            $this->headers->remove('Expires');
+            return $this;
+        }
+
+        if ($date instanceof \DateTime) {
+            $date = \DateTimeImmutable::createFromMutable($date);
+        }
+
+        $date = $date->setTimezone(new \DateTimeZone('UTC'));
+        $this->headers->set('Expires', $date->format('D, d M Y H:i:s' . ' GMT'));
+
+        return $this;
+    }
+
+    public function getExpires(): ?\DateTimeInterface
+    {
+        try {
+            return $this->headers->getDate('Expires');
+        } catch (\RuntimeException) {
+            return \DateTime::createFromFormat('U', (string) (time() - 172800));
+        }
+    }
 
     public function isInvalid(): bool
     {
