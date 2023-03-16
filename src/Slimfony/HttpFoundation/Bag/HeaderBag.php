@@ -5,20 +5,29 @@ namespace Slimfony\HttpFoundation\Bag;
 use Slimfony\HttpFoundation\Utils\HeaderUtils;
 
 /**
- * @template-extends AbstractBag<string, list<string|null>
+ * @template K as string
+ * @template V as list<string|null>
+ *
+ * @extends AbstractBag<K, V>
  */
 class HeaderBag extends AbstractBag
 {
     /**
-     * @var array<string, list<string|null>>
+     * @var array<K, V>
      */
     protected array $cacheControl;
 
     /**
-     * @param array<string, list<string|null>> $headers
+     * @param array<string, list<string|null>> $data
      */
-    public function __construct(array $headers = [])
+    public function __construct(array $data = [])
     {
+        $headers = [];
+        foreach ($data as $key => $value) {
+            $this->set($key, $value);
+            $this->all();
+        }
+
         parent::__construct($headers);
         $this->cacheControl = [];
     }
@@ -48,7 +57,7 @@ class HeaderBag extends AbstractBag
 
     /**
      * @param string $key
-     * @param string|array|null $value
+     * @param string|list<string|null> $value
      *
      * @return void
      */
@@ -58,11 +67,14 @@ class HeaderBag extends AbstractBag
 
         if ('cache-control' === $key) {
             $this->cacheControl = $this->parseCacheControl(implode(', ', $this->data[$key]));
-        } elseif (!\is_array($value)) {
-            $this->data[$key] = [$value];
-        } else {
-            $this->data[$key] = $value;
+            return;
         }
+
+        if (!\is_array($value)) {
+            $value = [$value];
+        }
+
+        parent::set($key, $value);
     }
 
     /**
