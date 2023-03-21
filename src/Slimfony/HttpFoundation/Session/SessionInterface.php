@@ -4,8 +4,6 @@ namespace Slimfony\HttpFoundation\Session;
 
 /**
  * Interface for the session.
- *
- * @author Drak <drak@zikula.org>
  */
 interface SessionInterface
 {
