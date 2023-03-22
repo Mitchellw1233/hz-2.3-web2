@@ -3,14 +3,15 @@ declare(strict_types=1);
 
 namespace Slimfony\HttpFoundation;
 
+use Slimfony\HttpFoundation\Bag\HeaderBag;
 use Slimfony\HttpFoundation\Bag\ResponseHeaderBag;
 
-class Response
+class Response implements ResponseInterface
 {
     public const HTTP_CONTINUE = 100;
     public const HTTP_SWITCHING_PROTOCOLS = 101;
-    public const HTTP_PROCESSING = 102;            // RFC2518
-    public const HTTP_EARLY_HINTS = 103;           // RFC8297
+    public const HTTP_PROCESSING = 102;
+    public const HTTP_EARLY_HINTS = 103;
     public const HTTP_OK = 200;
     public const HTTP_CREATED = 201;
     public const HTTP_ACCEPTED = 202;
@@ -48,33 +49,37 @@ class Response
     public const HTTP_UNSUPPORTED_MEDIA_TYPE = 415;
     public const HTTP_REQUESTED_RANGE_NOT_SATISFIABLE = 416;
     public const HTTP_EXPECTATION_FAILED = 417;
-    public const HTTP_I_AM_A_TEAPOT = 418;                                               // RFC2324
-    public const HTTP_MISDIRECTED_REQUEST = 421;                                         // RFC7540
-    public const HTTP_UNPROCESSABLE_ENTITY = 422;                                        // RFC4918
-    public const HTTP_LOCKED = 423;                                                      // RFC4918
-    public const HTTP_FAILED_DEPENDENCY = 424;                                           // RFC4918
-    public const HTTP_TOO_EARLY = 425;                                                   // RFC-ietf-httpbis-replay-04
-    public const HTTP_UPGRADE_REQUIRED = 426;                                            // RFC2817
-    public const HTTP_PRECONDITION_REQUIRED = 428;                                       // RFC6585
-    public const HTTP_TOO_MANY_REQUESTS = 429;                                           // RFC6585
-    public const HTTP_REQUEST_HEADER_FIELDS_TOO_LARGE = 431;                             // RFC6585
-    public const HTTP_UNAVAILABLE_FOR_LEGAL_REASONS = 451;                               // RFC7725
+    public const HTTP_I_AM_A_TEAPOT = 418;
+    public const HTTP_MISDIRECTED_REQUEST = 421;
+    public const HTTP_UNPROCESSABLE_ENTITY = 422;
+    public const HTTP_LOCKED = 423;
+    public const HTTP_FAILED_DEPENDENCY = 424;
+    public const HTTP_TOO_EARLY = 425;
+    public const HTTP_UPGRADE_REQUIRED = 426;
+    public const HTTP_PRECONDITION_REQUIRED = 428;
+    public const HTTP_TOO_MANY_REQUESTS = 429
+    public const HTTP_REQUEST_HEADER_FIELDS_TOO_LARGE = 431;
+    public const HTTP_UNAVAILABLE_FOR_LEGAL_REASONS = 451;
     public const HTTP_INTERNAL_SERVER_ERROR = 500;
     public const HTTP_NOT_IMPLEMENTED = 501;
     public const HTTP_BAD_GATEWAY = 502;
     public const HTTP_SERVICE_UNAVAILABLE = 503;
     public const HTTP_GATEWAY_TIMEOUT = 504;
     public const HTTP_VERSION_NOT_SUPPORTED = 505;
-    public const HTTP_VARIANT_ALSO_NEGOTIATES_EXPERIMENTAL = 506;                        // RFC2295
-    public const HTTP_INSUFFICIENT_STORAGE = 507;                                        // RFC4918
-    public const HTTP_LOOP_DETECTED = 508;                                               // RFC5842
-    public const HTTP_NOT_EXTENDED = 510;                                                // RFC2774
-    public const HTTP_NETWORK_AUTHENTICATION_REQUIRED = 511;                             // RFC6585
+    public const HTTP_VARIANT_ALSO_NEGOTIATES_EXPERIMENTAL = 506;
+    public const HTTP_INSUFFICIENT_STORAGE = 507;
+    public const HTTP_LOOP_DETECTED = 508;
+    public const HTTP_NOT_EXTENDED = 510;
+    public const HTTP_NETWORK_AUTHENTICATION_REQUIRED = 511;
+
+    public ResponseHeaderBag $headers;
+    protected string $content;
+    protected string $version;
 
     public static array $statusTexts = [
         100 => 'Continue',
         101 => 'Switching Protocols',
-        102 => 'Processing',            // RFC2518
+        102 => 'Processing',
         103 => 'Early Hints',
         200 => 'OK',
         201 => 'Created',
@@ -83,9 +88,9 @@ class Response
         204 => 'No Content',
         205 => 'Reset Content',
         206 => 'Partial Content',
-        207 => 'Multi-Status',          // RFC4918
-        208 => 'Already Reported',      // RFC5842
-        226 => 'IM Used',               // RFC3229
+        207 => 'Multi-Status',
+        208 => 'Already Reported',
+        226 => 'IM Used',
         300 => 'Multiple Choices',
         301 => 'Moved Permanently',
         302 => 'Found',
@@ -93,7 +98,7 @@ class Response
         304 => 'Not Modified',
         305 => 'Use Proxy',
         307 => 'Temporary Redirect',
-        308 => 'Permanent Redirect',    // RFC7238
+        308 => 'Permanent Redirect',
         400 => 'Bad Request',
         401 => 'Unauthorized',
         402 => 'Payment Required',
@@ -107,38 +112,34 @@ class Response
         410 => 'Gone',
         411 => 'Length Required',
         412 => 'Precondition Failed',
-        413 => 'Content Too Large',                                           // RFC-ietf-httpbis-semantics
+        413 => 'Content Too Large',
         414 => 'URI Too Long',
         415 => 'Unsupported Media Type',
         416 => 'Range Not Satisfiable',
         417 => 'Expectation Failed',
-        418 => 'I\'m a teapot',                                               // RFC2324
-        421 => 'Misdirected Request',                                         // RFC7540
-        422 => 'Unprocessable Content',                                       // RFC-ietf-httpbis-semantics
-        423 => 'Locked',                                                      // RFC4918
-        424 => 'Failed Dependency',                                           // RFC4918
-        425 => 'Too Early',                                                   // RFC-ietf-httpbis-replay-04
-        426 => 'Upgrade Required',                                            // RFC2817
-        428 => 'Precondition Required',                                       // RFC6585
-        429 => 'Too Many Requests',                                           // RFC6585
-        431 => 'Request Header Fields Too Large',                             // RFC6585
-        451 => 'Unavailable For Legal Reasons',                               // RFC7725
+        418 => '(unused)',
+        421 => 'Misdirected Request',
+        422 => 'Unprocessable Content',
+        423 => 'Locked',
+        424 => 'Failed Dependency',
+        425 => 'Too Early',
+        426 => 'Upgrade Required',
+        428 => 'Precondition Required',
+        429 => 'Too Many Requests',
+        431 => 'Request Header Fields Too Large',
+        451 => 'Unavailable For Legal Reasons',
         500 => 'Internal Server Error',
         501 => 'Not Implemented',
         502 => 'Bad Gateway',
         503 => 'Service Unavailable',
         504 => 'Gateway Timeout',
         505 => 'HTTP Version Not Supported',
-        506 => 'Variant Also Negotiates',                                     // RFC2295
-        507 => 'Insufficient Storage',                                        // RFC4918
-        508 => 'Loop Detected',                                               // RFC5842
-        510 => 'Not Extended',                                                // RFC2774
-        511 => 'Network Authentication Required',                             // RFC6585
+        506 => 'Variant Also Negotiates',
+        507 => 'Insufficient Storage',
+        508 => 'Loop Detected',
+        510 => 'Not Extended',
+        511 => 'Network Authentication Required',
     ];
-
-    public ResponseHeaderBag $headers;
-    protected string $content;
-    protected string $version;
 
     protected int $statusCode;
 
@@ -168,7 +169,7 @@ class Response
         }
 
         foreach ($this->headers->getCookies() as $cookie) {
-            header('Set-Cookie: '.$cookie, false, $this->statusCode);
+            setcookie($cookie->getName(), $cookie->getValue(), $cookie->getExpires(), $cookie->getPath(), $cookie->getDomain(), $cookie->getSecure(). $cookie->getHttpOnly());
         }
 
         if ($informationalResponse) {
@@ -217,11 +218,11 @@ class Response
     }
 
     /**
-     * @return array<string, list<string|null>>
+     * @return HeaderBag
      */
-    public function getHeaders(): array
+    public function getHeaders(): HeaderBag
     {
-        return $this->headers->all();
+        return $this->headers;
     }
 
     /**
@@ -261,24 +262,6 @@ class Response
     }
 
     /**
-     * @param string $version
-     * @return static
-     */
-    public function setProtocolVersion(string $version): static
-    {
-        $this->version = $version;
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getStatusCode(): int
-    {
-        return $this->statusCode;
-    }
-
-    /**
      * @param int $statusCode
      * @return static
      */
@@ -288,39 +271,6 @@ class Response
         if ($this->isInvalid()) { throw new \InvalidArgumentException(sprintf('The HTTP status code "%s" is not valid.', $statusCode)); }
 
         return $this;
-    }
-
-    public function getAge(): int
-    {
-        if (null !== $age = $this->headers->get('Age')) {
-            return (int) $age;
-        }
-
-        return max(time() - (int) $this->getDate()->format('U'), 0);
-    }
-
-    public function setMaxAge(int $value): static
-    {
-        $this->headers->addCacheControlDirective('max-age', (string) $value);
-        return $this;
-    }
-
-    public function getMaxAge(): ?int
-    {
-        if ($this->headers->hasCacheControlDirective('s-maxage')) {
-            return (int) $this->headers->getCacheControlDirective('s-maxage');
-        }
-
-        if ($this->headers->hasCacheControlDirective('max-age')) {
-            return (int) $this->headers->getCacheControlDirective('max-age');
-        }
-
-        if (null !== $expires = $this->getExpires()) {
-            $maxAge = (int) $expires->format('U') - (int) $this->getDate()->format('U');
-            return max($maxAge, 0);
-        }
-
-        return null;
     }
 
     public function setDate(\DateTimeInterface $date): static
@@ -340,34 +290,31 @@ class Response
         return $this->headers->getDate('Date');
     }
 
-    public function setExpires(\DateTimeInterface $date = null): static
-    {
-        if (null === $date) {
-            $this->headers->remove('Expires');
-            return $this;
-        }
-
-        if ($date instanceof \DateTime) {
-            $date = \DateTimeImmutable::createFromMutable($date);
-        }
-
-        $date = $date->setTimezone(new \DateTimeZone('UTC'));
-        $this->headers->set('Expires', $date->format('D, d M Y H:i:s' . ' GMT'));
-
-        return $this;
-    }
-
-    public function getExpires(): ?\DateTimeInterface
-    {
-        try {
-            return $this->headers->getDate('Expires');
-        } catch (\RuntimeException) {
-            return \DateTime::createFromFormat('U', (string) (time() - 172800));
-        }
-    }
-
     public function isInvalid(): bool
     {
         return $this->statusCode < 100 || $this->statusCode >= 600;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStatusCode(): int
+    {
+        return $this->statusCode;
+    }
+
+    public function getReasonPhrase(): string
+    {
+        $statusCode = $this->getStatusCode();
+        return \array_key_exists($statusCode, $this::$statusTexts) ? $this::$statusTexts[$statusCode] : "Unnasigned";
+    }
+
+    /**
+     * @param string $version
+     * @return void
+     */
+    public function setProtocolVersion(string $version): void
+    {
+        $this->version = $version;
     }
 }

@@ -120,7 +120,7 @@ class HeaderBag extends AbstractBag
      *
      * @param string|null $key
      *
-     * @return list<string|null>
+     * @return array<int, string>
      */
     public function all($key = null): array
     {
@@ -150,7 +150,7 @@ class HeaderBag extends AbstractBag
     /**
      * @inheritDoc
      *
-     * @param list<string|null> $data
+     * @param array<int, string> $data
      */
     public function add(array $data = []): void
     {
