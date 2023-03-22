@@ -1,6 +1,6 @@
 <?php
 
-namespace Slimfony\HttpFoundation\Utils;
+namespace Slimfony\HttpFoundation\Util;
 
 class HeaderUtils
 {

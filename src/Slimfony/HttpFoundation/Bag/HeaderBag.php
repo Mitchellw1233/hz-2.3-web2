@@ -2,7 +2,7 @@
 
 namespace Slimfony\HttpFoundation\Bag;
 
-use Slimfony\HttpFoundation\Utils\HeaderUtils;
+use Slimfony\HttpFoundation\Util\HeaderUtils;
 
 /**
  * @template K as string
