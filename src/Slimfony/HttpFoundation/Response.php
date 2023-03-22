@@ -305,7 +305,7 @@ class Response implements ResponseInterface
 
     public function getReasonPhrase(): string
     {
-        return self::$statusTexts[$this->getStatusCode()] ?? "Unnasigned";
+        return self::$statusTexts[$this->getStatusCode()] ?? 'Unnasigned';
     }
 
     /**
