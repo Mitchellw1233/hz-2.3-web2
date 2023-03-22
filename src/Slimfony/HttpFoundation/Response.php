@@ -305,7 +305,11 @@ class Response implements ResponseInterface
 
     public function getReasonPhrase(): string
     {
+<<<<<<< HEAD
         return self::$statusTexts[$this->getStatusCode()] ?? "Unnasigned";
+=======
+        return self::$statusTexts[$this->getStatusCode()] ?? 'Unknown status';
+>>>>>>> refs/remotes/origin/http-response
     }
 
     /**
