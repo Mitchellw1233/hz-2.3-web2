@@ -2,8 +2,6 @@
 
 namespace Slimfony\HttpFoundation;
 
-use Slimfony\HttpFoundation\Util\HeaderUtils;
-
 class Cookie
 {
     /**
