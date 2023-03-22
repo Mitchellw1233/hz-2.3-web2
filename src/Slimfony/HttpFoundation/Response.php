@@ -57,7 +57,7 @@ class Response implements ResponseInterface
     public const HTTP_TOO_EARLY = 425;
     public const HTTP_UPGRADE_REQUIRED = 426;
     public const HTTP_PRECONDITION_REQUIRED = 428;
-    public const HTTP_TOO_MANY_REQUESTS = 429
+    public const HTTP_TOO_MANY_REQUESTS = 429;
     public const HTTP_REQUEST_HEADER_FIELDS_TOO_LARGE = 431;
     public const HTTP_UNAVAILABLE_FOR_LEGAL_REASONS = 451;
     public const HTTP_INTERNAL_SERVER_ERROR = 500;
@@ -177,7 +177,7 @@ class Response implements ResponseInterface
             return $this;
         }
 
-        header(sprintf('HTTP/%s %s %s', $this->version, $this->statusCode, self::$statusTexts[$this->statusCode]), true, $this->statusCode);
+        header(sprintf('HTTP/%s %s %s', $this->version, $this->statusCode, $this->getReasonPhrase());
 
         return $this;
     }
@@ -305,8 +305,7 @@ class Response implements ResponseInterface
 
     public function getReasonPhrase(): string
     {
-        $statusCode = $this->getStatusCode();
-        return \array_key_exists($statusCode, $this::$statusTexts) ? $this::$statusTexts[$statusCode] : "Unnasigned";
+        return self::$statusTexts[$this->getStatusCode()] ?? "Unnasigned";
     }
 
     /**
