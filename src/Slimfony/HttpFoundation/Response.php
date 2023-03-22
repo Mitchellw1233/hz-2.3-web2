@@ -177,7 +177,7 @@ class Response implements ResponseInterface
             return $this;
         }
 
-        header(sprintf('HTTP/%s %s %s', $this->version, $this->statusCode, $this->getReasonPhrase());
+        header(sprintf('HTTP/%s %s %s', $this->version, $this->statusCode, $this->getReasonPhrase()));
 
         return $this;
     }
