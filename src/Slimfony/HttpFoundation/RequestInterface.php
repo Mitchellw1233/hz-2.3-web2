@@ -5,6 +5,7 @@ namespace Slimfony\HttpFoundation;
 use Slimfony\HttpFoundation\Bag\InputBag;
 use Slimfony\HttpFoundation\Bag\ParameterBag;
 use Slimfony\HttpFoundation\Bag\ServerBag;
+use Slimfony\HttpFoundation\Session\SessionInterface;
 
 interface RequestInterface extends MessageInterface
 {
@@ -102,4 +103,11 @@ interface RequestInterface extends MessageInterface
      *     representing the URI of the request.
      */
     public function getUri(): UriInterface;
+
+    /**
+     * Retrieves the current session or creates one if it does not exist
+     *
+     * @return SessionInterface Returns the current session.
+     */
+    public function getSession(): SessionInterface;
 }
