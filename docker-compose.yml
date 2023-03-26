@@ -23,6 +23,6 @@ services:
 #    image: cs-api-strapi:dev
     volumes:
       - ./slimfonytest/.:/opt/slimfonytest
-      - /opt/slimfonytest/vendor
+#      - /opt/slimfonytest/vendor
     ports:
       - '6969:80'
