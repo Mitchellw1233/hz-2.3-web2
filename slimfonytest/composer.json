@@ -18,12 +18,16 @@
     }
   ],
   "require": {
-    "php": "^8.2"
+    "php": "^8.2",
+    "slimfony/slimfony": "@dev"
   },
   "repositories": [
     {
       "type": "path",
-      "url": "../"
+      "url": "../Slimfony",
+      "options": {
+        "symlink": true
+      }
     }
   ]
 }

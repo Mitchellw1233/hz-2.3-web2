@@ -1,8 +1,8 @@
-.idea/workspace.xml
-.idea/usage.statistics.xml
-.idea/shelf
+Slimfony/.idea/workspace.xml
+Slimfony/.idea/usage.statistics.xml
+Slimfony/.idea/shelf
 
-/vendor
+Slimfony/vendor
 
 # slimfonytest
 /slimfonytest/vendor

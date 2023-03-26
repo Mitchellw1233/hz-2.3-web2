@@ -1,9 +1,12 @@
 <?php
 
-// For example:
-use Slimfony\HttpFoundation\Request;
+require dirname(__DIR__).'/vendor/autoload.php';
 
-echo "test2";
+// For example:
+use Slimfony\Routing\Route;
+
+
+var_dump(new Route('test', 'test', 'test ', ['test']));
 
 //require dirname(__DIR__).'/vendor/autoload.php';
 
