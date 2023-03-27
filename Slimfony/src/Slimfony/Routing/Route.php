@@ -7,10 +7,15 @@ class Route
     protected string $name;
     protected string $path;
     protected string $controllerPath;
+
     /**
      * @var array<int, string>
      */
     protected array|null $methods;
+
+    /**
+     * @var array<string, string>
+     */
     protected array $parameters;
 
     /**
@@ -98,6 +103,33 @@ class Route
     public function setMethods(array|null $methods): void
     {
         $this->methods = $methods;
+    }
+
+    /**
+     * @param string $key
+     * @param string $value
+     *
+     * @return void
+     */
+    public function fillParameter(string $key, string $value): void
+    {
+        if (!array_key_exists($key, $this->getParameters())) {
+            throw new \LogicException('Array key does not exist in parameters');
+        }
+
+        $this->parameters[$key] = $value;
+    }
+
+    /**
+     * @param array<string, string> $parameters
+     *
+     * @return void
+     */
+    public function fillParameters(array $parameters): void
+    {
+        foreach ($parameters as $key => $value) {
+            $this->fillParameter($key, $value);
+        }
     }
 
     protected function setParameters(): void
