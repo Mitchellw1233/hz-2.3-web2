@@ -27,11 +27,6 @@ class RouteResolver
 
     public function resolveRoute(RequestInterface $request, RouteCollection $routeCollection): ?Route
     {
-        $routes = [
-            new Route('api.test.show', '/api/test', 'App\\src\\Controller\\Api\\TestController::show', ['GET']),
-            new Route('api.test.delete', '/api/test/{id}', 'App\\src\\Controller\\Api\\TestController::delete', ['DELETE', 'GET']),
-        ];
-
         $path = $request->getUri()->getPath();
 
         // split path subs
@@ -43,7 +38,7 @@ class RouteResolver
         $pathSubs[$psc-1] = $pathSubsMatches[0];
 
         // check every route to see if there is a match
-        foreach ($routes as $route) {  // Todo foreach ($routeCollection)
+        foreach ($routeCollection->all() as $route) {
             $rPathSubs = explode('/', substr($route->getPath(), 1));
             $rpsc = count($rPathSubs);
 
