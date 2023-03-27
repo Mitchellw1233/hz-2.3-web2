@@ -7,6 +7,14 @@
         "GET",
         "HEAD"
       ]
+    },
+    "api.post.edit": {
+      "path": "/api/posts/{id}/edit",
+      "controller": "App\\Controller\\BlogApiController::edit",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
     }
   }
 }
