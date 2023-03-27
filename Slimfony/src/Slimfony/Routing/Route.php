@@ -10,16 +10,16 @@ class Route
     /**
      * @var array<int, string>
      */
-    protected array $methods;
+    protected array|null $methods;
     protected array $parameters;
 
     /**
      * @param string $name
      * @param string $path
      * @param string $controllerPath the absolute path of the controller
-     * @param array<int, string> $methods
+     * @param array<int, string>|null $methods
      */
-    public function __construct(string $name, string $path, string $controllerPath, array $methods)
+    public function __construct(string $name, string $path, string $controllerPath, array|null $methods)
     {
         $this->setName($name);
         $this->setPath($path);
@@ -52,9 +52,9 @@ class Route
     }
 
     /**
-     * @return array<int, string>
+     * @return array<int, string>|null
      */
-    public function getMethods(): array
+    public function getMethods(): array|null
     {
         return $this->methods;
     }
@@ -93,9 +93,9 @@ class Route
     }
 
     /**
-     * @param array<int, string> $methods
+     * @param array<int, string>|null $methods
      */
-    public function setMethods(array $methods): void
+    public function setMethods(array|null $methods): void
     {
         $this->methods = $methods;
     }
