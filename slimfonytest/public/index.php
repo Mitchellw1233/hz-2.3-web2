@@ -17,11 +17,19 @@ $rr = new RouteResolver($config);
 
 var_dump($rr->resolveRoute($request, new RouteCollection()));
 
+$route1 = new Route('test', 'test', 'test ', ['test']);
+$route2 = new Route('foo', 'test', 'test ', ['test']);
+
+$routeCollection = new RouteCollection();
+
+$routeCollection->add($route1);
+$routeCollection->add($route2);
+
+$routeCollection->remove($route2);
+
+var_dump($routeCollection);
+
 //var_dump(new Route('test', 'test', 'test ', ['test']));
-//var_dump($config->getRoutes());
-
-
-//$test = preg_replace_callback('#.+(?=\?|\#)+#', fn($matches) => $matches[0], $test);
-//var_dump($test);
+var_dump($config->getRoutes());
 
 //(new Dotenv())->bootEnv(dirname(__DIR__).'/.env');
