@@ -31,9 +31,7 @@ class ControllerResolver
      * @param Route $route
      * @param callable $controller
      *
-     * @throws \LogicException
-     *
-     * @return array
+     * @return array<int, string>
      */
     public function getArguments(Route $route, callable $controller): array
     {
@@ -47,7 +45,7 @@ class ControllerResolver
                     throw new \LogicException("Didn't include ".$param->getName()." inside of ".$reflection->getName());
                 }
             }
-        } catch (\Exception $_) {
+        } catch (\Exception) {
             throw new \LogicException('The controller apparently doesn`t exist?');
         }
 
