@@ -6,6 +6,13 @@ use Slimfony\Routing\Route;
 
 class ControllerResolver
 {
+    /**
+     * @param Route $route
+     *
+     * @throws \LogicException
+     *
+     * @return callable
+     */
     public function getController(Route $route): callable
     {
         $controllerPath = $route->getControllerPath();
@@ -20,6 +27,14 @@ class ControllerResolver
         return $controller;
     }
 
+    /**
+     * @param Route $route
+     * @param callable $controller
+     *
+     * @throws \LogicException
+     *
+     * @return array
+     */
     public function getArguments(Route $route, callable $controller): array
     {
         try {
@@ -28,12 +43,12 @@ class ControllerResolver
             $rParams = $route->getParameters();
 
             foreach ($cParams as $param) {
-                if (!\key_exists($param->getName(), $rParams) && !$param->isOptional()) {
+                if (!\array_key_exists($param->getName(), $rParams) && !$param->isOptional()) {
                     throw new \LogicException("Didn't include ".$param->getName()." inside of ".$reflection->getName());
                 }
             }
-        } catch (\Exception $e) {
-            throw new \LogicException('The controller apperantly doesn`t exist?');
+        } catch (\Exception $_) {
+            throw new \LogicException('The controller apparently doesn`t exist?');
         }
 
         return \array_values($route->getParameters());
