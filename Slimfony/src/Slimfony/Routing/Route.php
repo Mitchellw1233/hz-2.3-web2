@@ -7,19 +7,24 @@ class Route
     protected string $name;
     protected string $path;
     protected string $controllerPath;
+
     /**
      * @var array<int, string>
      */
-    protected array $methods;
+    protected array|null $methods;
+
+    /**
+     * @var array<string, string>
+     */
     protected array $parameters;
 
     /**
      * @param string $name
      * @param string $path
      * @param string $controllerPath the absolute path of the controller
-     * @param array<int, string> $methods
+     * @param array<int, string>|null $methods
      */
-    public function __construct(string $name, string $path, string $controllerPath, array $methods)
+    public function __construct(string $name, string $path, string $controllerPath, array|null $methods)
     {
         $this->setName($name);
         $this->setPath($path);
@@ -52,9 +57,9 @@ class Route
     }
 
     /**
-     * @return array<int, string>
+     * @return array<int, string>|null
      */
-    public function getMethods(): array
+    public function getMethods(): array|null
     {
         return $this->methods;
     }
@@ -93,11 +98,38 @@ class Route
     }
 
     /**
-     * @param array<int, string> $methods
+     * @param array<int, string>|null $methods
      */
-    public function setMethods(array $methods): void
+    public function setMethods(array|null $methods): void
     {
         $this->methods = $methods;
+    }
+
+    /**
+     * @param string $key
+     * @param string $value
+     *
+     * @return void
+     */
+    public function fillParameter(string $key, string $value): void
+    {
+        if (!array_key_exists($key, $this->getParameters())) {
+            throw new \LogicException('Array key does not exist in parameters');
+        }
+
+        $this->parameters[$key] = $value;
+    }
+
+    /**
+     * @param array<string, string> $parameters
+     *
+     * @return void
+     */
+    public function fillParameters(array $parameters): void
+    {
+        foreach ($parameters as $key => $value) {
+            $this->fillParameter($key, $value);
+        }
     }
 
     protected function setParameters(): void

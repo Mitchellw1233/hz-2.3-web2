@@ -3,25 +3,27 @@
 require dirname(__DIR__).'/vendor/autoload.php';
 
 // For example:
-use Slimfony\Routing\Route;
+use Slimfony\HttpFoundation\Request;
 use Slimfony\Config\ConfigLoader;
-use Slimfony\Routing\RouteCollection;
+use Slimfony\Routing\RouteResolver;
+use Slimfony\HttpKernel\ControllerResolver;
+
+$request = Request::createFromGlobals();
 
 $config = new ConfigLoader(dirname(__DIR__));
+$cr = new ControllerResolver();
+$rr = new RouteResolver($config);
 
-$route1 = new Route('test', 'test', 'test ', ['test']);
-$route2 = new Route('foo', 'test', 'test ', ['test']);
+$route = $rr->resolveRoute($request, $rr->resolveRoutes());
 
-$routeCollection = new RouteCollection();
+$controller = $cr->getController($route);
+$args = $cr->getArguments($route, $controller);
 
-$routeCollection->add($route1);
-$routeCollection->add($route2);
+call_user_func_array($controller, $args);
 
-$routeCollection->remove($route2);
+//var_dump($rr->resolveRoute($request, $rr->resolveRoutes()));
+//var_dump('<br>');
+//var_dump('<br>');
 
-var_dump($routeCollection);
-
-//var_dump(new Route('test', 'test', 'test ', ['test']));
-//var_dump($config->getRoutes());
 
 //(new Dotenv())->bootEnv(dirname(__DIR__).'/.env');

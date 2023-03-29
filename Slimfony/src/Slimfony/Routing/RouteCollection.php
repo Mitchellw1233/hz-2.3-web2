@@ -2,7 +2,6 @@
 
 namespace Slimfony\Routing;
 
-use Slimfony\HttpFoundation\Request;
 
 class RouteCollection
 {
@@ -34,14 +33,15 @@ class RouteCollection
      */
     public function remove(Route $route): void
     {
-        if (false !== $key = array_search($route, $this->routes)) {
+        if (false !== $key = array_search($route, $this->routes, true)) {
             unset($this->routes[$key]);
         }
     }
 
     /**
      * Returns all routes
-     * @return Array<Route>
+     *
+     * @return array<Route>
      */
     public function all(): array
     {

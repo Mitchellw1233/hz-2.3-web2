@@ -5,7 +5,7 @@ namespace Slimfony\Config;
 class ConfigLoader
 {
     /**
-     * @var array<int, array{
+     * @var array<string, array{
      *     path: string,
      *     controller: string,
      *     methods: array<string>|null,
@@ -34,7 +34,7 @@ class ConfigLoader
     }
 
     /**
-     * @return array<int, array{
+     * @return array<string, array{
      *     path: string,
      *     controller: string,
      *     methods: array<string>|null,
@@ -46,7 +46,7 @@ class ConfigLoader
     }
 
     /**
-     * @param array<int, array{
+     * @param array<string, array{
      *     path: string,
      *     controller: string,
      *     methods: array<string>|null,

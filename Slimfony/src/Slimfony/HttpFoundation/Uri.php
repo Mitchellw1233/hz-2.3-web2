@@ -17,9 +17,9 @@ class Uri implements UriInterface
     public function __construct(string $url)
     {
         $this->url = $url;
-        $uri = parse_url($url);
+        $parts = parse_url($url);
 
-        if ($uri === false) {
+        if ($parts === false) {
             throw new \LogicException('Url is not valid');
         }
 
