@@ -9,8 +9,6 @@ class ControllerResolver
     /**
      * @param Route $route
      *
-     * @throws \LogicException
-     *
      * @return callable
      */
     public function getController(Route $route): callable
