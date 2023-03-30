@@ -15,7 +15,7 @@ interface EventSubscriberInterface
      *      ['methodName3', $priority3],    <br>
      *   ]]
      *
-     * @return array<string, array<int, array{0: string, 1: int}>>
+     * @return array<string, array<int, array{0: string, 1?: int}>>
      */
     public static function getSubscribedEvents(): array;
 }
