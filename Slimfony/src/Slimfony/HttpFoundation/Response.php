@@ -139,7 +139,7 @@ class Response implements ResponseInterface
         508 => 'Loop Detected',
         510 => 'Not Extended',
         511 => 'Network Authentication Required',
-    ];
+    ];  // TODO: enum
 
     protected int $statusCode;
 
