@@ -8,5 +8,5 @@ use Slimfony\HttpFoundation\Response;
 interface KernelInterface
 {
     public function handle(Request $request): Response;
-    public function getProjectDir(): string;
+    public static function getProjectDir(): string;
 }

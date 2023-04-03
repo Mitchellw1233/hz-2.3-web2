@@ -2,6 +2,7 @@
 
 namespace Slimfony\HttpKernel;
 
+use Slimfony\DependencyInjection\Container;
 use Slimfony\EventDispatcher\EventDispatcher;
 use Slimfony\HttpFoundation\Request;
 use Slimfony\HttpFoundation\Response;
@@ -13,11 +14,15 @@ use Slimfony\Routing\Route;
 
 abstract class Kernel implements KernelInterface
 {
+    protected EventDispatcher $dispatcher;
+    protected ControllerResolver $controllerResolver;
+
     public function __construct(
-        protected EventDispatcher $dispatcher,
-        protected ControllerResolver $controllerResolver,
+        protected Container $container,
     )
     {
+        $this->dispatcher = $this->container->get(EventDispatcher::class);
+        $this->controllerResolver = $this->container->get(ControllerResolver::class);
     }
 
     public function handle(Request $request): Response
