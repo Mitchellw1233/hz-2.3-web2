@@ -139,14 +139,14 @@ class Response implements ResponseInterface
         508 => 'Loop Detected',
         510 => 'Not Extended',
         511 => 'Network Authentication Required',
-    ];
+    ];  // TODO: enum
 
     protected int $statusCode;
 
     public function __construct(?string $content = '', int $status = 200, array $headers = [])
     {
         $this->setContent($content);
-        $this->setHeaders($headers);
+        $this->headers = new ResponseHeaderBag();
         $this->setStatusCode($status);
         $this->setProtocolVersion('1.1');
     }

@@ -22,8 +22,8 @@ services:
 #        NODE_ENV: development
 #    image: cs-api-strapi:dev
     volumes:
+      - /opt/slimfonytest/vendor  # excluded
       - ./Slimfony/.:/opt/Slimfony
       - ./slimfonytest/.:/opt/slimfonytest
-      - /opt/slimfonytest/vendor  # excluded
     ports:
       - '6969:80'

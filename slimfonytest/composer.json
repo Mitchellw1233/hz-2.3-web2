@@ -29,5 +29,8 @@
         "symlink": true
       }
     }
-  ]
+  ],
+  "require-dev": {
+    "symfony/var-dumper": "*"
+  }
 }

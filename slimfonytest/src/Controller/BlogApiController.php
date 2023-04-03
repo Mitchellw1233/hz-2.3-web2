@@ -4,15 +4,18 @@ namespace App\Controller;
 
 class BlogApiController
 {
-    public function show(int $id=null)
+    public function list(): string
     {
-        if (is_null($id)) return;
-
-        echo 'POST-'.$id;
+        return 'LIST';
     }
 
-    public function edit(int $id)
+    public function show(int $id): string
     {
-        echo 'EDIT POST-'.$id;
+        return 'SHOW = '.$id;
+    }
+
+    public function edit(int $id): string
+    {
+        return 'EDIT POST-'.$id;
     }
 }

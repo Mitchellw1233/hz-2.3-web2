@@ -2,7 +2,7 @@
   "routes": {
     "api.post.list": {
       "path": "/api/posts",
-      "controller": "App\\Controller\\BlogApiController::show"
+      "controller": "App\\Controller\\BlogApiController::list"
     },
     "api.post.show": {
       "path": "/api/posts/{id}",

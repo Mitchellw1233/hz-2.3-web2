@@ -2,28 +2,25 @@
 
 require dirname(__DIR__).'/vendor/autoload.php';
 
-// For example:
+use App\Kernel;
+use Slimfony\EventDispatcher\EventDispatcher;
 use Slimfony\HttpFoundation\Request;
 use Slimfony\Config\ConfigLoader;
+use Slimfony\HttpKernel\EventListener\RouterListener;
+use Slimfony\HttpKernel\EventListener\TypeResponseListener;
 use Slimfony\Routing\RouteResolver;
 use Slimfony\HttpKernel\ControllerResolver;
 
-$request = Request::createFromGlobals();
 
 $config = new ConfigLoader(dirname(__DIR__));
 $cr = new ControllerResolver();
 $rr = new RouteResolver($config);
 
-$route = $rr->resolveRoute($request, $rr->resolveRoutes());
+$dispatcher = new EventDispatcher();
+$dispatcher->addSubscriber(new RouterListener($rr));
+$dispatcher->addSubscriber(new TypeResponseListener());
 
-$controller = $cr->getController($route);
-$args = $cr->getArguments($route, $controller);
+$kernel = new Kernel($dispatcher, $cr);
 
-call_user_func_array($controller, $args);
-
-//var_dump($rr->resolveRoute($request, $rr->resolveRoutes()));
-//var_dump('<br>');
-//var_dump('<br>');
-
-
-//(new Dotenv())->bootEnv(dirname(__DIR__).'/.env');
+$response = $kernel->handle(Request::createFromGlobals());
+$response->send();
