@@ -43,7 +43,7 @@ class ControllerResolver
                     throw new \LogicException("Didn't include ".$param->getName()." inside of ".$reflection->getName());
                 }
             }
-        } catch (\Exception) {
+        } catch (\ReflectionException) {
             throw new \LogicException('The controller apparently doesn`t exist?');
         }
 

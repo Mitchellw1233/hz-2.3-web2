@@ -3,6 +3,8 @@ Slimfony/.idea/usage.statistics.xml
 Slimfony/.idea/shelf
 
 Slimfony/vendor
+/Slimfony/composer.lock
 
 # slimfonytest
 /slimfonytest/vendor
+/slimfonytest/composer.lock

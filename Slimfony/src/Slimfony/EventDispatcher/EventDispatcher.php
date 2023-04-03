@@ -22,7 +22,7 @@ class EventDispatcher
     {
         $eventName = $event::class;
 
-        foreach ($this->listeners[$eventName] as $listener) {
+        foreach ($this->sortedListeners[$eventName] as $listener) {
             $listener($event);
         }
     }

@@ -6,27 +6,29 @@ use Slimfony\HttpFoundation\Request;
 use Slimfony\HttpFoundation\Response;
 use Slimfony\HttpKernel\KernelInterface;
 
-class ResponseEvent extends KernelEvent
+class ViewEvent extends KernelEvent
 {
-    private Response $response;
-
     public function __construct(
         KernelInterface $kernel,
         Request $request,
-
-        Response $response,
+        protected mixed $controllerResult,
+        protected $response = null
     ) {
         parent::__construct($kernel, $request);
-        $this->response = $response;
     }
 
-    public function setResponse(Response $response)
+    public function getControllerResult(): mixed
     {
-        $this->response = $response;
+        return $this->controllerResult;
     }
 
-    public function getResponse(): Response
+    public function getResponse(): Response|null
     {
         return $this->response;
+    }
+
+    public function setResponse(Response $response): void
+    {
+        $this->response = $response;
     }
 }
