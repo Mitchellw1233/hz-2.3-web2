@@ -4,6 +4,7 @@ namespace Slimfony\Routing;
 
 use Slimfony\HttpFoundation\Response;
 use Slimfony\Templating\Template;
+use Slimfony\DependencyInjection\Container;
 
 abstract class AbstractController
 {
