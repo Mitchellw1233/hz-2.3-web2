@@ -15,7 +15,9 @@ $slimfony = [
     'Slimfony\Config\ConfigLoader' => [
         'args' => [$projectDir],
     ],
-    'Slimfony\HttpKernel\ControllerResolver' => [],
+    'Slimfony\HttpKernel\ControllerResolver' => [
+//        'args' => [new Reference(\Slimfony\DependencyInjection\Container::class)],
+    ],
     'Slimfony\Routing\RouteResolver' => [
 //        'args' => [new Reference(\Slimfony\Config\ConfigLoader::class)]
     ],
@@ -33,6 +35,10 @@ $slimfony = [
             ]],
         ],
     ],
+
+    'Slimfony\Templating\Template' => [
+        'args' => [$projectDir.'/templates']
+    ],
 ];
 
 /**
@@ -42,7 +48,9 @@ $slimfony = [
  * }> $slimfonytest
  */
 $slimfonytest = [
-    'App\Controller\BlogApiController' => [],
+    'App\Controller\BlogApiController' => [
+//        'args' => [new Reference(\Slimfony\DependencyInjection\Container::class)],
+    ],
 ];
 
 /**
