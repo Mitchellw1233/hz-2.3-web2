@@ -3,6 +3,7 @@
 namespace Slimfony\HttpKernel;
 
 use Slimfony\DependencyInjection\Container;
+use Slimfony\DependencyInjection\Exception\ServiceNotFoundException;
 use Slimfony\Routing\Route;
 
 class ControllerResolver
@@ -24,7 +25,7 @@ class ControllerResolver
         [$class, $method] = explode('::', $controllerPath, 2);
         try {
             $class = $this->container->get($class);
-        } catch (\Exception) {
+        } catch (ServiceNotFoundException) {
             throw new \LogicException($controllerPath.' is not set in services.php');
         }
         $controller = [$class, $method];
