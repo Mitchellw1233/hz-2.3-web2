@@ -3,24 +3,22 @@
 require dirname(__DIR__).'/vendor/autoload.php';
 
 use App\Kernel;
-use Slimfony\EventDispatcher\EventDispatcher;
+use Slimfony\DependencyInjection\ContainerBuilder;
+use Slimfony\DependencyInjection\Reference;
 use Slimfony\HttpFoundation\Request;
-use Slimfony\Config\ConfigLoader;
-use Slimfony\HttpKernel\EventListener\RouterListener;
-use Slimfony\HttpKernel\EventListener\TypeResponseListener;
-use Slimfony\Routing\RouteResolver;
-use Slimfony\HttpKernel\ControllerResolver;
 
+/**
+ * @var array<string, array{
+ *     args?: array<int, mixed|Reference>,
+ *     methods?: array<int, array{method: string, args?: array<int, mixed|Reference>}>
+ * }> $services
+ */
+$services = include dirname(__DIR__) . '/config/services.php';
 
-$config = new ConfigLoader(dirname(__DIR__));
-$cr = new ControllerResolver();
-$rr = new RouteResolver($config);
+$cb = new ContainerBuilder();
+$cb->registerAll($services);
 
-$dispatcher = new EventDispatcher();
-$dispatcher->addSubscriber(new RouterListener($rr));
-$dispatcher->addSubscriber(new TypeResponseListener());
-
-$kernel = new Kernel($dispatcher, $cr);
+$kernel = new Kernel($cb->getContainer());
 
 $response = $kernel->handle(Request::createFromGlobals());
 $response->send();

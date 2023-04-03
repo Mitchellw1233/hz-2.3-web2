@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
-class BlogApiController
+use Slimfony\Routing\AbstractController;
+
+class BlogApiController extends AbstractController
 {
     public function list(): string
     {
