@@ -8,12 +8,14 @@ use Slimfony\DependencyInjection\Container;
 
 abstract class AbstractController
 {
+    private Template $template;
     /**
      * @param Container $container
      */
     public function __construct(
         protected Container $container,
     ) {
+        $this->template = $this->container->get(Template::class);
     }
 
     /**
@@ -23,8 +25,7 @@ abstract class AbstractController
      */
     public function render(string $viewPath, array $parameters): Response
     {
-        $template = $this->container->get(Template::class);
-        $content = $template->render($viewPath, $parameters);
+        $content = $this->template->render($viewPath, $parameters);
         return new Response($content);
     }
 }
