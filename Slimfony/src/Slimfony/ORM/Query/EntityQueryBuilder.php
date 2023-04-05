@@ -21,7 +21,7 @@ class EntityQueryBuilder extends AbstractQueryBuilder
         protected string $className
     ) {
         parent::__construct();
-        $this->statements[] = 'SELECT * FROM ' . $this->mappingResolver->reslove($this->className)['entity']->name;
+        $this->statements[] = 'SELECT * FROM ' . $this->mappingResolver->reslove($this->className)->entity->name;
     }
 
     /**
