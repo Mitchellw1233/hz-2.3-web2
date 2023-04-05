@@ -2,7 +2,7 @@
 
 namespace Slimfony\ORM\Query;
 
-class AbstractQueryBuilder
+abstract class AbstractQueryBuilder
 {
     /**
      * @var string|null
