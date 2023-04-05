@@ -19,6 +19,11 @@ class Driver
         $this->connection->beginTransaction();
     }
 
+    public function inTransaction(): bool
+    {
+        $this->connection->inTransaction();
+    }
+
     public function execute(string $sql, $parameters=[]): array
     {
         $statement = $this->connection->prepare($sql);

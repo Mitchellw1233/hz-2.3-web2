@@ -4,6 +4,7 @@ namespace Slimfony\ORM\Resolver;
 
 use Slimfony\ORM\Mapping\Entity;
 use Slimfony\ORM\Mapping\Column;
+use Slimfony\ORM\Mapping\Map;
 
 class MappingResolver
 {
@@ -22,12 +23,9 @@ class MappingResolver
 
     /**
      * @param string $entity
-     * @return array{
-     *     entity: Entity,
-     *     columns: array<string, Column>
-     * }
+     * @return Map
      */
-    public function resolve(string $entity): array
+    public function resolve(string $entity): Map
     {
         try {
             $rEntity = new \ReflectionClass($entity);
@@ -35,8 +33,7 @@ class MappingResolver
             throw new \LogicException('Entity "'.$entity.'" does not exist');
         }
 
-        $map = [];
-        $map['entity'] = $rEntity->getAttributes()[0]->newInstance();
+        $map = new Map($rEntity->getAttributes()[0]->newInstance(), []);
 
         foreach ($rEntity->getProperties() as $property) {
             $propertyAttribute = $property->getAttributes()[0];
@@ -44,17 +41,14 @@ class MappingResolver
                 continue;
             }
 
-            $map['columns'][$property->getName()] = $propertyAttribute->newInstance();
+            $map->columns[$property->getName()] = $propertyAttribute->newInstance();
         }
 
         return $map;
     }
 
     /**
-     * @return array<int, array{
-     *          entity: Entity,
-     *          columns: array<string, Column>
-     *      }>
+     * @return array<int, Map>
      */
     public function resolveAll(): array {
         $mapping = [];
