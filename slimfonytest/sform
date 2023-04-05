@@ -1,0 +1,7 @@
+<?php
+
+if (count($argv) > 0) {
+    if ($argv[1] === 'generate') {
+        echo 'generating...';
+    }
+}
