@@ -15,6 +15,9 @@ use Slimfony\HttpFoundation\Request;
  */
 $services = include dirname(__DIR__) . '/config/services.php';
 
+$ormMapper = new \Slimfony\ORM\Resolver\MappingResolver([\App\Entity\Post::class]);
+dump($ormMapper->resolve());
+
 $cb = new ContainerBuilder();
 $cb->registerAll($services);
 
