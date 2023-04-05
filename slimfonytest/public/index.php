@@ -14,13 +14,11 @@ use Slimfony\HttpFoundation\Request;
  * }> $services
  */
 $services = include dirname(__DIR__) . '/config/services.php';
-$entities = include dirname(__DIR__). '/config/entities.php';
-
-$ormMapper = new \Slimfony\ORM\Resolver\MappingResolver($entities);
-dump($ormMapper->resolve());
 
 $cb = new ContainerBuilder();
 $cb->registerAll($services);
+
+dump($cb->getContainer()->get(\Slimfony\Config\ConfigLoader::class)->getDb());
 
 $kernel = new Kernel($cb->getContainer());
 

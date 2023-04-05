@@ -14,6 +14,17 @@ class ConfigLoader
     protected array $routes;
 
     /**
+     * @var array{
+     *      database: string,
+     *      username: string,
+     *      password: string,
+     *      url: string,
+     *      port: int,
+     * }
+     */
+    protected array $db;
+
+    /**
      * @throws \LogicException
      */
     public function __construct(string $projectDir)
@@ -31,6 +42,7 @@ class ConfigLoader
         }
 
         $this->setRoutes($json['routes']);
+        $this->setDb($json['db']);
     }
 
     /**
@@ -64,5 +76,33 @@ class ConfigLoader
         }
 
         $this->routes = $data;
+    }
+
+    /**
+     * @return array{
+     *      database: string,
+     *      username: string,
+     *      password: string,
+     *      url: string,
+     *      port: int,
+     * }
+     */
+    public function getDb(): array
+    {
+        return $this->db;
+    }
+
+    /**
+     * @param array{
+     *      database: string,
+     *      username: string,
+     *      password: string,
+     *      url: string,
+     *      port: int,
+     * } $db
+     */
+    protected function setDb(array $db): void
+    {
+        $this->db = $db;
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+$entities = include dirname(__DIR__). '/config/entities.php';
+
 if (count($argv) > 0) {
     if ($argv[1] === 'generate') {
         echo 'generating...';
