@@ -5,7 +5,7 @@ namespace Slimfony\ORM;
 class EntityFactory
 {
     /**
-     * @param array $arr
+     * @param array<string, mixed> $arr
      *
      * @template T
      * @psalm-param class-string<T> $class
@@ -21,15 +21,19 @@ class EntityFactory
 
         // Map parameter names to values from associative array
         $args = [];
-        foreach ($rc->getConstructor()->getParameters() as $param) {
+        foreach ($rc->getConstructor()?->getParameters() as $param) {
             $name = $param->getName();
-            if (!$param->isOptional() && !array_key_exists($name, $arr)) {
+            if (!array_key_exists($name, $arr) && !$param->isOptional()) {
                 throw new \InvalidArgumentException("Missing required parameter $name");
             }
 
             $args[] = $arr[$name];
         }
 
-        return new $className(...$args);
+        try {
+            return new $className(...$args);
+        } catch (\Exception $e) {
+            throw new \LogicException($e->getMessage());
+        }
     }
 }
