@@ -2,7 +2,7 @@
 
 namespace Slimfony\ORM\Query;
 
-use Slimfony\ORM\Factory\EntityFactory;
+use Slimfony\ORM\EntityFactory;
 
 /**
  * @template T

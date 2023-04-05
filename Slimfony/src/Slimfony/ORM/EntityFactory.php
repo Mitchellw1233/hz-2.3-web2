@@ -1,6 +1,6 @@
 <?php
 
-namespace Slimfony\ORM\Factory;
+namespace Slimfony\ORM;
 
 class EntityFactory
 {
