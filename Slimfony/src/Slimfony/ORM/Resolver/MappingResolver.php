@@ -8,7 +8,7 @@ use Slimfony\ORM\Mapping\Column;
 class MappingResolver
 {
     /**
-     * @var array<int, Entity>
+     * @var array<int, class-string>
      */
     protected array $entities;
 
@@ -31,7 +31,11 @@ class MappingResolver
 
         for ($i = 0; $i < count($this->entities); $i++) {
             $entity = $this->entities[$i];
-            $rEntity = new \ReflectionClass($entity);
+            try {
+                $rEntity = new \ReflectionClass($entity);
+            } catch (\ReflectionException) {
+                throw new \LogicException('Entity "'.$entity.'" does not exist');
+            }
             $mapping[$i]['entity'] = $rEntity->getAttributes()[0]->newInstance();
 
             foreach ($rEntity->getProperties() as $property) {
