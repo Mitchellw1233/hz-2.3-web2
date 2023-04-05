@@ -7,11 +7,11 @@ class EntityFactory
     /**
      * @param array<string, mixed> $arr
      *
-     * @template T
+     * @template T of Entity
      * @psalm-param class-string<T> $class
      * @psalm-return T
      */
-    public function createFromArray(string $className, array $arr)
+    public function createFromArray(string $className, array $arr, bool $isNew = false)
     {
         try {
             $rc = new \ReflectionClass($className);
@@ -31,9 +31,15 @@ class EntityFactory
         }
 
         try {
-            return new $className(...$args);
+            $class = new $className(...$args);
+            $isNewProp = new \ReflectionProperty($class::class, 'isNew');
         } catch (\Exception $e) {
             throw new \LogicException($e->getMessage());
         }
+
+        $isNewProp->setAccessible(true);
+        $isNewProp->setValue($isNew);
+
+        return $class;
     }
 }
