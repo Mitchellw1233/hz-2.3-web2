@@ -21,31 +21,46 @@ class MappingResolver
     }
 
     /**
+     * @param string $entity
+     * @return array{
+     *     entity: Entity,
+     *     columns: array<string, Column>
+     * }
+     */
+    public function resolve(string $entity): array
+    {
+        try {
+            $rEntity = new \ReflectionClass($entity);
+        } catch (\ReflectionException) {
+            throw new \LogicException('Entity "'.$entity.'" does not exist');
+        }
+
+        $map = [];
+        $map['entity'] = $rEntity->getAttributes()[0]->newInstance();
+
+        foreach ($rEntity->getProperties() as $property) {
+            $propertyAttribute = $property->getAttributes()[0];
+            if ($propertyAttribute === null) {
+                continue;
+            }
+
+            $map['columns'][$property->getName()] = $propertyAttribute->newInstance();
+        }
+
+        return $map;
+    }
+
+    /**
      * @return array<int, array{
      *          entity: Entity,
      *          columns: array<string, Column>
      *      }>
      */
-    public function resolve(): array {
+    public function resolveAll(): array {
         $mapping = [];
 
-        for ($i = 0; $i < count($this->entities); $i++) {
-            $entity = $this->entities[$i];
-            try {
-                $rEntity = new \ReflectionClass($entity);
-            } catch (\ReflectionException) {
-                throw new \LogicException('Entity "'.$entity.'" does not exist');
-            }
-            $mapping[$i]['entity'] = $rEntity->getAttributes()[0]->newInstance();
-
-            foreach ($rEntity->getProperties() as $property) {
-                $propertyAttribute = $property->getAttributes()[0];
-                if ($propertyAttribute === null) {
-                    continue;
-                }
-
-                $mapping[$i]['columns'][$property->getName()] = $propertyAttribute->newInstance();
-            }
+        foreach ($this->entities as $entity) {
+            $mapping[] = $this->resolve($entity);
         }
 
         return $mapping;
