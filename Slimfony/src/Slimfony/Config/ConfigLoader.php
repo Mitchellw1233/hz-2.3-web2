@@ -18,7 +18,7 @@ class ConfigLoader
      *      database: string,
      *      username: string,
      *      password: string,
-     *      url: string,
+     *      host: string,
      *      port: int,
      * }
      */
@@ -83,7 +83,7 @@ class ConfigLoader
      *      database: string,
      *      username: string,
      *      password: string,
-     *      url: string,
+     *      host: string,
      *      port: int,
      * }
      */
@@ -97,7 +97,7 @@ class ConfigLoader
      *      database: string,
      *      username: string,
      *      password: string,
-     *      url: string,
+     *      host: string,
      *      port: int,
      * } $db
      */

@@ -25,7 +25,7 @@
     "database": "slimfony",
     "username": "root",
     "password": "slimfonyIsSlim",
-    "url": "pgsql:host=localhost;dbname=slimfony",
+    "host": "localhost",
     "port": 5432
   }
 }
