@@ -4,6 +4,7 @@ namespace Slimfony\ORM\Resolver;
 
 use Slimfony\ORM\Entity;
 
+// TODO: Remove
 class EntityValueResolver
 {
     /**

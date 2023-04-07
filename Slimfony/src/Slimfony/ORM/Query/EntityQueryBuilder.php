@@ -2,21 +2,24 @@
 
 namespace Slimfony\ORM\Query;
 
-use Slimfony\ORM\EntityFactory;
+use Slimfony\ORM\EntityTransformer;
 
 /**
  * @template T
  */
 class EntityQueryBuilder extends AbstractQueryBuilder
 {
+    protected bool $isSingleResult = false;
+
     /**
      * @param Driver $driver
-     * @param EntityFactory $entityFactory
+     * @param EntityTransformer $entityTransformer
+     * @param MappingResolver $mappingResolver
      * @psalm-param class-string<T> $className
      */
     public function __construct(
         protected Driver $driver,
-        protected EntityFactory $entityFactory,
+        protected EntityTransformer $entityTransformer,
         protected MappingResolver $mappingResolver,
         protected string $className
     ) {
@@ -32,10 +35,18 @@ class EntityQueryBuilder extends AbstractQueryBuilder
      */
     public function result()
     {
-        return $this->entityFactory->createFromArray(
-            $this->className,
-            $this->driver->execute($this->build(), $this->getParameters())
-        );
+        $result = $this->driver->execute($this->build(), $this->getParameters());
+
+        if ($this->isSingleResult) {
+            return $this->entityTransformer->fromDBResult($this->className, $result);
+        }
+
+        $entities = [];
+        foreach ($result as $entityResult) {
+            $entities[] = $this->entityTransformer->fromDBResult($this->className, $entityResult);
+        }
+
+        return $entities;
     }
 
     /**
@@ -64,6 +75,10 @@ class EntityQueryBuilder extends AbstractQueryBuilder
 
     public function limit(int $limit): static
     {
+        if ($limit < 2) {
+            $this->isSingleResult = true;
+        }
+
         $this->statements[] = 'LIMIT ' . $limit;
         return $this;
     }

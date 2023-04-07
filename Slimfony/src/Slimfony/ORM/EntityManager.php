@@ -4,26 +4,20 @@ namespace Slimfony\ORM;
 
 use Slimfony\ORM\Query\EntityQueryBuilder;
 use Slimfony\ORM\Query\InternalQueryBuilder;
-use Slimfony\ORM\Resolver\EntityValueResolver;
 
 class EntityManager
 {
     public function __construct(
         protected Driver $driver,
         protected MappingResolver $mappingResolver,
-        protected EntityValueResolver $entityValueResolver,
-        protected EntityFactory $entityFactory,
+        protected EntityTransformer $entityTransformer,
     ) {
     }
 
     public function persist(Entity $entity): void
     {
         $map = $this->mappingResolver->resolve($entity::class);
-        $values = [];
-
-        foreach ($this->entityValueResolver->resolve($entity, $map) as $entityValue) {
-            $values[$entityValue['mapColumn']->name] = $entityValue['value'];
-        }
+        $values = $this->entityTransformer->toDBResult($entity);
 
         $qb = new InternalQueryBuilder();
         if ($entity->isNew()) {
@@ -53,6 +47,6 @@ class EntityManager
      */
     public function getQueryBuilder(string $className): EntityQueryBuilder
     {
-        return new EntityQueryBuilder($this->driver, $this->entityFactory, $this->mappingResolver, $className);
+        return new EntityQueryBuilder($this->driver, $this->entityTransformer, $this->mappingResolver, $className);
     }
 }
