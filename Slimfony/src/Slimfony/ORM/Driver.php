@@ -27,7 +27,7 @@ class Driver
 
     public function inTransaction(): bool
     {
-        $this->connection->inTransaction();
+        return $this->connection->inTransaction();
     }
 
     public function execute(string $sql, $parameters=[]): array
