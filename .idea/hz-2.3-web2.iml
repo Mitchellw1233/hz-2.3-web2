@@ -2,11 +2,12 @@
 <module type="WEB_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/slimfonytest/src" isTestSource="false" packagePrefix="App\" />
-      <sourceFolder url="file://$MODULE_DIR$/Slimfony/src" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/Slimfony/vendor/composer" />
+      <sourceFolder url="file://$MODULE_DIR$/Slimfony/src/Slimfony" isTestSource="false" packagePrefix="Slimfony\" />
+      <sourceFolder url="file://$MODULE_DIR$/spec" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/slimfonytest/vendor" />
       <excludeFolder url="file://$MODULE_DIR$/Slimfony/vendor" />
+      <excludeFolder url="file://$MODULE_DIR$/Slimfony/vendor/composer" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

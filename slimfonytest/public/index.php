@@ -18,7 +18,9 @@ $services = include dirname(__DIR__) . '/config/services.php';
 $cb = new ContainerBuilder();
 $cb->registerAll($services);
 
-dump($cb->getContainer()->get(\Slimfony\Config\ConfigLoader::class)->getDb());
+$mr = new \Slimfony\ORM\Resolver\MappingResolver([\App\Entity\User::class, \App\Entity\Post::class]);
+dump($mr->resolveAll());
+//dump($cb->getContainer()->get(\Slimfony\Config\ConfigLoader::class)->getDb());
 
 $kernel = new Kernel($cb->getContainer());
 

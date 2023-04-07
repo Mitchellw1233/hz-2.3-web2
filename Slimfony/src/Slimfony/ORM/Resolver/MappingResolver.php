@@ -36,12 +36,22 @@ class MappingResolver
         $map = new Map($rEntity->getAttributes()[0]->newInstance(), []);
 
         foreach ($rEntity->getProperties() as $property) {
-            $propertyAttribute = $property->getAttributes()[0];
-            if ($propertyAttribute === null) {
+            $propertyAttributes = $property->getAttributes();
+
+            // Is true if property has 2 attributes in our case (FKRelation and Column)
+            // Elseif checks if index 0 is not null so we can make a new instance on it
+            // Else we just continue
+            if (count($propertyAttributes) == 2) {
+                $fkRelation = $propertyAttributes[0]->newInstance();
+                $column = $propertyAttributes[1]->newInstance();
+                $column->setRelation($fkRelation);
+            } elseif($propertyAttributes[0] !== null) {
+                $column = $propertyAttributes[0]->newInstance();
+            } else {
                 continue;
             }
 
-            $map->columns[$property->getName()] = $propertyAttribute->newInstance();
+            $map->columns[$property->getName()] = $column;
         }
 
         return $map;
