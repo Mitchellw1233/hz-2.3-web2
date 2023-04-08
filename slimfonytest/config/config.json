@@ -20,5 +20,12 @@
         "PUT"
       ]
     }
+  },
+  "db": {
+    "database": "slimfony",
+    "username": "root",
+    "password": "slimfonyIsSlim",
+    "host": "localhost",
+    "port": 5432
   }
 }
