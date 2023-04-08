@@ -2,25 +2,10 @@
 
 namespace Slimfony\ORM\Resolver;
 
-use Slimfony\ORM\Mapping\Entity;
-use Slimfony\ORM\Mapping\Column;
 use Slimfony\ORM\Mapping\Map;
 
 class MappingResolver
 {
-    /**
-     * @var array<int, class-string>
-     */
-    protected array $entities;
-
-    /**
-     * @param array<int, class-string> $entities as FQN
-     */
-    public function __construct(array $entities)
-    {
-        $this->entities = $entities;
-    }
-
     /**
      * @param string $entity
      * @return Map
@@ -41,7 +26,7 @@ class MappingResolver
             // Is true if property has 2 attributes in our case (FKRelation and Column)
             // Elseif checks if index 0 is not null so we can make a new instance on it
             // Else we just continue
-            if (count($propertyAttributes) == 2) {
+            if (count($propertyAttributes) === 2) {
                 $fkRelation = $propertyAttributes[0]->newInstance();
                 $column = $propertyAttributes[1]->newInstance();
                 $column->setRelation($fkRelation);
@@ -58,12 +43,14 @@ class MappingResolver
     }
 
     /**
+     * @param array<int, class-string> $entities as FQN
+     *
      * @return array<int, Map>
      */
-    public function resolveAll(): array {
+    public function resolveAll(array $entities): array {
         $mapping = [];
 
-        foreach ($this->entities as $entity) {
+        foreach ($entities as $entity) {
             $mapping[] = $this->resolve($entity);
         }
 

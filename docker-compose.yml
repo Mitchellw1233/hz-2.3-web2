@@ -27,3 +27,18 @@ services:
       - ./slimfonytest/.:/opt/slimfonytest
     ports:
       - '6969:80'
+
+  db:
+    restart: on-failure
+    image: postgres:15.2
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: slimfony
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: slimfonyIsSlim
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+volumes:
+  pg-data:

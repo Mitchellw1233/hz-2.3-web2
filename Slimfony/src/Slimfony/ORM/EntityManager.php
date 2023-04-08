@@ -4,6 +4,7 @@ namespace Slimfony\ORM;
 
 use Slimfony\ORM\Query\EntityQueryBuilder;
 use Slimfony\ORM\Query\InternalQueryBuilder;
+use Slimfony\ORM\Resolver\MappingResolver;
 
 class EntityManager
 {
@@ -28,8 +29,8 @@ class EntityManager
                 ->set($values);
         }
 
-        if (!$this->driver->isTransaction()) {
-            $this->driver->startTransaction();
+        if (!$this->driver->inTransaction()) {
+            $this->driver->beginTransaction();
         }
 
         $this->driver->execute($qb->build());

@@ -2,15 +2,16 @@
 
 namespace App\Entity;
 
+use Slimfony\ORM\Entity as BaseEntity;
 use Slimfony\ORM\Mapping\Column;
 use Slimfony\ORM\Mapping\Entity;
 
 #[Entity('user')]
-class User
+class User extends BaseEntity
 {
     #[Column('id', 'int', true, unsigned: true, autoIncrement: true)]
-    public int $id;
+    private int $id;
 
     #[Column('username', 'varchar')]
-    public string $username;
+    private string $username;
 }

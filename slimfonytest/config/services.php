@@ -12,23 +12,36 @@ $projectDir = Kernel::getProjectDir();
  * }> $slimfony
  */
 $slimfony = [
-    'Slimfony\Config\ConfigLoader' => [
+    // Global
+    \Slimfony\Config\ConfigLoader::class => [
         'args' => [$projectDir],
     ],
-    'Slimfony\ORM\Driver' => [
-//        'args' => [new Reference(\Slimfony\Config\ConfigLoader::class)]
+
+    // ORM
+    \Slimfony\ORM\Resolver\MappingResolver::class => [],
+    \Slimfony\ORM\Driver::class => [
+        'shared' => true,
+        // ConfigLoader
     ],
-    'Slimfony\HttpKernel\ControllerResolver' => [
-//        'args' => [new Reference(\Slimfony\DependencyInjection\Container::class)],
+    \Slimfony\ORM\EntityTransformer::class => [
+        // MappingResolver, Driver
     ],
-    'Slimfony\Routing\RouteResolver' => [
-//        'args' => [new Reference(\Slimfony\Config\ConfigLoader::class)]
+    \Slimfony\ORM\EntityManager::class => [
+        // Driver, MappingResolver, EntityTransformer
     ],
-    'Slimfony\HttpKernel\EventListener\TypeResponseListener' => [],
-    'Slimfony\HttpKernel\EventListener\RouterListener' => [
-//        'args' => [new Reference(\Slimfony\Routing\RouteResolver::class)]
+
+    // Framework
+    \Slimfony\HttpKernel\ControllerResolver::class => [
+        // Container
     ],
-    'Slimfony\EventDispatcher\EventDispatcher' => [
+    \Slimfony\Routing\RouteResolver::class => [
+        // ConfigLoader
+    ],
+    \Slimfony\HttpKernel\EventListener\TypeResponseListener::class => [],
+    \Slimfony\HttpKernel\EventListener\RouterListener::class => [
+        // RouteResolver
+    ],
+    \Slimfony\EventDispatcher\EventDispatcher::class => [
         'methods' => [
             ['method' => 'addSubscriber', 'args' => [
                 new Reference(\Slimfony\HttpKernel\EventListener\RouterListener::class),
@@ -38,8 +51,7 @@ $slimfony = [
             ]],
         ],
     ],
-
-    'Slimfony\Templating\Template' => [
+    \Slimfony\Templating\Template::class => [
         'args' => [$projectDir.'/templates']
     ],
 ];
@@ -51,8 +63,8 @@ $slimfony = [
  * }> $slimfonytest
  */
 $slimfonytest = [
-    'App\Controller\BlogApiController' => [
-//        'args' => [new Reference(\Slimfony\DependencyInjection\Container::class)],
+    \App\Controller\BlogApiController::class => [
+        // Container
     ],
 ];
 

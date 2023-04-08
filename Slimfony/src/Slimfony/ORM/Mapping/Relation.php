@@ -11,4 +11,12 @@ abstract class Relation
         protected string $targetEntity,
     ) {
     }
+
+    /**
+     * @return class-string
+     */
+    public function getTargetEntity(): string
+    {
+        return $this->targetEntity;
+    }
 }

@@ -2,7 +2,9 @@
 
 namespace Slimfony\ORM\Query;
 
+use Slimfony\ORM\Driver;
 use Slimfony\ORM\EntityTransformer;
+use Slimfony\ORM\Resolver\MappingResolver;
 
 /**
  * @template T
@@ -24,7 +26,7 @@ class EntityQueryBuilder extends AbstractQueryBuilder
         protected string $className
     ) {
         parent::__construct();
-        $this->statements[] = 'SELECT * FROM ' . $this->mappingResolver->reslove($this->className)->entity->name;
+        $this->statements[] = 'SELECT * FROM ' . $this->mappingResolver->resolve($this->className)->entity->name;
     }
 
     /**

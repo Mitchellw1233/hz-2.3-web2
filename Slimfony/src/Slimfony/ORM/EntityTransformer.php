@@ -2,7 +2,11 @@
 
 namespace Slimfony\ORM;
 
+use Slimfony\ORM\Mapping\Column;
+use Slimfony\ORM\Mapping\FKInterface;
+use Slimfony\ORM\Mapping\Relation;
 use Slimfony\ORM\Query\EntityQueryBuilder;
+use Slimfony\ORM\Resolver\MappingResolver;
 
 class EntityTransformer
 {
@@ -26,7 +30,7 @@ class EntityTransformer
     {
         try {
             $rc = new \ReflectionClass($className);
-            $isNewProp = new \ReflectionProperty($className, 'isNew');
+            $isNewProp = new \ReflectionProperty(Entity::class, 'isNew');
             $class = $rc->newInstanceWithoutConstructor();
         } catch (\ReflectionException $e) {
             throw new \LogicException($e->getMessage());
@@ -47,7 +51,7 @@ class EntityTransformer
 
             // If column has relation, need to set all the values
             if ($column->hasRelation()) {
-                $prop->setValue($this->fromRelation($column, $dbResult));
+                $prop->setValue($class, $this->fromRelation($column, $dbResult));
                 continue;
             }
 
@@ -60,29 +64,6 @@ class EntityTransformer
         }
 
         return $class;
-
-        // Map parameter names to values from associative array
-//        $args = [];
-//        foreach ($rc->getConstructor()?->getParameters() as $param) {
-//            $name = $param->getName();
-//            if (!array_key_exists($name, $arr) && !$param->isOptional()) {
-//                throw new \InvalidArgumentException("Missing required parameter $name");
-//            }
-//
-//            $args[] = $arr[$name];
-//        }
-//
-//        try {
-//            $class = new $className(...$args);
-//            $isNewProp = new \ReflectionProperty($class::class, 'isNew');
-//        } catch (\Exception $e) {
-//            throw new \LogicException($e->getMessage());
-//        }
-//
-//        $isNewProp->setAccessible(true);
-//        $isNewProp->setValue($class, $isNew);
-//
-//        return $class;
     }
 
     /**
@@ -119,6 +100,7 @@ class EntityTransformer
             throw new \LogicException(sprintf('column `%s` is not in result set', $column->name));
         }
 
+        /** @var Relation $relation already checked if it has a relation, see fromDBResult() */
         $relation = $column->getRelation();
         $qb = new EntityQueryBuilder($this->driver, $this, $this->mappingResolver, $relation->getTargetEntity());
 
