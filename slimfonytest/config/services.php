@@ -15,6 +15,9 @@ $slimfony = [
     'Slimfony\Config\ConfigLoader' => [
         'args' => [$projectDir],
     ],
+    'Slimfony\ORM\Driver' => [
+//        'args' => [new Reference(\Slimfony\Config\ConfigLoader::class)]
+    ],
     'Slimfony\HttpKernel\ControllerResolver' => [
 //        'args' => [new Reference(\Slimfony\DependencyInjection\Container::class)],
     ],
