@@ -13,7 +13,7 @@ class Column
         public bool $primaryKey=false,
         public bool $nullable=false,
         public bool $unique=false,
-        public bool $unsigned=false,
+        public bool $unsigned=false,  // Not supported by PGSQL
         public bool $autoIncrement=false,
     ) {
     }

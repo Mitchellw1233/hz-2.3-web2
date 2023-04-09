@@ -33,6 +33,7 @@ class Driver
 
     public function execute(string $sql, $parameters=[]): array
     {
+        // TODO: use schema as default, but have option to bypass this for SchemaManager
         $statement = $this->connection->prepare($sql);
         $statement->execute($parameters);
         return $statement->fetchAll();

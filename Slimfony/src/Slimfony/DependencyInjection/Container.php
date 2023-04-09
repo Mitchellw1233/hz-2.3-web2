@@ -22,9 +22,14 @@ class Container implements ContainerInterface
     }
 
     /**
+     * @template T
+     *
      * @throws ServiceNotFoundException
+     *
+     * @psalm-param class-string<T> $key
+     * @psalm-return T
      */
-    public function get(string $key): mixed
+    public function get(string $key)
     {
         return $this->services[$key]() ?? throw new ServiceNotFoundException($key);
     }

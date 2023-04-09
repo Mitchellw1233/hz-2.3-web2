@@ -1,9 +1,52 @@
 <?php
 
-$entities = include dirname(__DIR__). '/config/entities.php';
+use Slimfony\DependencyInjection\ContainerBuilder;
+use Slimfony\DependencyInjection\Reference;
+use Slimfony\ORM\SchemaManager;
 
-if (count($argv) > 0) {
-    if ($argv[1] === 'generate') {
-        echo 'generating...';
+/**
+ * @var array<string, array{
+ *     args?: array<int, mixed|Reference>,
+ *     methods?: array<int, array{method: string, args?: array<int, mixed|Reference>}>
+ * }> $services
+ */
+$services = include __DIR__ . '/config/services.php';
+
+/**
+ * @return array<int, class-string> as FQN
+ */
+$entities = include __DIR__ . '/config/entities.php';
+
+$cb = new ContainerBuilder();
+$cb->registerAll($services);
+
+$container = $cb->getContainer();
+
+try {
+    if (count($argv) > 0) {
+        $driver = $container->get(\Slimfony\ORM\Driver::class);
+        $sg = new SchemaManager(
+            $driver,
+            $container->get(\Slimfony\ORM\Resolver\MappingResolver::class),
+            $container->get(\Slimfony\Config\ConfigLoader::class),
+        );
+
+        $driver->beginTransaction();
+        switch ($argv[1]) {
+            case 'fresh':
+                echo 'deleting database...';
+                $sg->delete();
+                $sg->generate($entities);
+                break;
+            case 'generate':
+                echo 'generating...';
+                $sg->generate($entities);
+                break;
+            default:
+                echo 'successful!';
+        }
+        $driver->commit();
     }
+} catch (Throwable $e) {
+    echo $e->getMessage();
 }
