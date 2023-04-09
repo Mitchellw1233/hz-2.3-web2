@@ -61,6 +61,8 @@ class SchemaManager
             $statements[] = $sql . ')';
         }
 
+        // TODO: First generate schema
+
         foreach ($statements as $statement) {
             $this->driver->execute($statement);
         }
