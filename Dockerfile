@@ -1,6 +1,6 @@
 # Development/testing only!
 FROM php:8.2.3
-RUN apt-get -y update && apt-get -y install git
+RUN apt-get -y update && apt-get -y install git && apt-get -y install libpq-dev && docker-php-ext-install pdo_pgsql
 COPY --from=composer:2.5.4 /usr/bin/composer /usr/bin/composer
 WORKDIR /opt
 COPY Slimfony/ /opt/Slimfony

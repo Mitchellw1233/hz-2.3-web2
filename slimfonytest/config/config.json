@@ -25,7 +25,7 @@
     "database": "slimfony",
     "username": "root",
     "password": "slimfonyIsSlim",
-    "host": "localhost",
+    "host": "db",
     "port": 5432
   }
 }

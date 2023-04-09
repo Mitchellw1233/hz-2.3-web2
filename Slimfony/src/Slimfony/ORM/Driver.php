@@ -7,7 +7,7 @@ use Slimfony\Config\ConfigLoader;
 
 class Driver
 {
-    protected $connection;
+    protected PDO $connection;
     public function __construct(
         ConfigLoader $config,
     ) {
@@ -21,7 +21,8 @@ class Driver
         $this->connection = new PDO($dsn, $config['username'], $config['password']);
     }
 
-    public function beginTransaction() {
+    public function beginTransaction(): void
+    {
         $this->connection->beginTransaction();
     }
 
@@ -37,12 +38,12 @@ class Driver
         return $statement->fetchAll();
     }
 
-    public function rollBack()
+    public function rollBack(): void
     {
         $this->connection->rollBack();
     }
 
-    public function commit()
+    public function commit(): void
     {
         $this->connection->commit();
     }

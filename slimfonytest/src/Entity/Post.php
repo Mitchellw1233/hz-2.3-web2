@@ -2,20 +2,21 @@
 
 namespace App\Entity;
 
+use Slimfony\ORM\Entity as BaseEntity;
 use Slimfony\ORM\Mapping\Entity;
 use Slimfony\ORM\Mapping\Column;
 use Slimfony\ORM\Mapping\FKRelation;
 
 #[Entity('post')]
-class Post
+class Post extends BaseEntity
 {
     #[Column('id', 'int', true, unsigned: true, autoIncrement: true)]
-    public int $id;
+    private int $id;
 
     #[FKRelation(User::class, 'id')]
     #[Column('posted_by', 'int', unsigned: true)]
-    public int $postedBy;
+    private User $postedBy;
 
     #[Column('title', 'varchar')]
-    public string $title;
+    private string $title;
 }

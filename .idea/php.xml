@@ -12,6 +12,8 @@
   </component>
   <component name="PhpIncludePathManager">
     <include_path>
+      <path value="$PROJECT_DIR$/vendor" />
+      <path value="$PROJECT_DIR$/Slimfony/vendor" />
       <path value="$PROJECT_DIR$/vendor/composer" />
       <path value="$PROJECT_DIR$/Slimfony/vendor/composer" />
     </include_path>

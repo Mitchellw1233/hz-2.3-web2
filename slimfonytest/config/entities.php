@@ -5,4 +5,5 @@
  */
 return [
     \App\Entity\Post::class,
+    \App\Entity\User::class,
 ];
