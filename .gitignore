@@ -2,6 +2,8 @@ Slimfony/.idea/workspace.xml
 Slimfony/.idea/usage.statistics.xml
 Slimfony/.idea/shelf
 
+.idea/dataSources**
+
 Slimfony/vendor
 /Slimfony/composer.lock
 

@@ -1,0 +1,111 @@
+<?php
+
+namespace Slimfony\ORM;
+
+use Slimfony\Config\ConfigLoader;
+use Slimfony\ORM\Mapping\Column;
+use Slimfony\ORM\Mapping\Entity as EntityMap;
+use Slimfony\ORM\Mapping\FKInterface;
+use Slimfony\ORM\Mapping\Relation;
+use Slimfony\ORM\Resolver\MappingResolver;
+
+class SchemaManager
+{
+    public function __construct(
+        protected Driver $driver,
+        protected MappingResolver $mappingResolver,
+        protected ConfigLoader $configLoader,
+    ) {
+    }
+
+    /**
+     * Assuming POSTGRESQL
+     *
+     * @param array<int, class-string> $entities
+     * @return void
+     */
+    public function generate(array $entities): void
+    {
+        $statements = [];
+        $fks = [];
+
+        $maps = $this->mappingResolver->resolveAll($entities);
+
+        foreach ($maps as $map) {
+            $name = $map->entity->name;
+            $cols = [];
+
+            foreach ($map->columns as $column) {
+                if ($column->autoIncrement && !str_contains(strtoupper($column->type), 'SERIAL')) {
+                    throw new \InvalidArgumentException(sprintf('table `%s.%s`: `%s` should be a SERIAL type, 
+                        because it has a autoIncrement', $map->entity->name, $column->name, $column->type));
+                }
+
+                if ($column->unique && $column->primaryKey) {
+                    $column->unique = false;
+                }
+
+                $cols[] = '"' . $column->name . '"'
+                    . ' ' . strtoupper($column->type)
+                    . ($column->primaryKey ? ' PRIMARY KEY' : '')
+                    . ($column->unique ? ' UNIQUE' : '')
+                    . ($column->nullable ? ' NULL' : ' NOT NULL');
+
+                // If relation, set up FK statement, so we alter the table and add the constraint
+                if ($column->hasRelation() && ($statement = $this->getRelationStatement($map->entity, $column)) !== null) {
+                    $fks[] = $statement;
+                }
+            }
+
+            $statements[] = sprintf('CREATE TABLE "%s" (%s)', $name, implode(', ', $cols));
+        }
+
+        foreach ($statements as $statement) {
+            $this->driver->execute($statement);
+        }
+
+        foreach ($fks as $statement) {
+            $this->driver->execute($statement);
+        }
+    }
+
+    /**
+     * Assuming POSTGRESQL
+     *
+     * @param array<int, class-string> $entities
+     */
+    public function delete(array $entities): void
+    {
+        foreach ($this->mappingResolver->resolveAll($entities) as $map) {
+            $this->driver->execute(sprintf('DROP TABLE IF EXISTS "%s" CASCADE', $map->entity->name));
+        }
+    }
+
+    /**
+     *
+     * @param EntityMap $entity
+     * @param Column $column
+     *
+     * @return string|null
+     */
+    private function getRelationStatement(EntityMap $entity, Column $column): ?string
+    {
+        /** @var Relation $relation Assuming it has a relation */
+        $relation = $column->getRelation();
+
+        // TODO: Relation could have other interfaces.
+        if (!$relation instanceof FKInterface) {
+            return null;
+        }
+        $relationMap = $this->mappingResolver->resolve($relation->getTargetEntity());
+
+        return sprintf('ALTER TABLE "%s" ADD CONSTRAINT fk_%s_%s FOREIGN KEY ("%s") REFERENCES "%s" ("%s")',
+            $entity->name,
+            $entity->name,
+            $column->name,
+            $column->name,
+            $relationMap->entity->name,
+            $relation->getTargetReferenceColumn(),
+        );
+    }
+}

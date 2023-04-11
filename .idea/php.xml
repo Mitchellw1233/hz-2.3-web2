@@ -16,6 +16,10 @@
       <path value="$PROJECT_DIR$/Slimfony/vendor" />
       <path value="$PROJECT_DIR$/vendor/composer" />
       <path value="$PROJECT_DIR$/Slimfony/vendor/composer" />
+      <path value="$PROJECT_DIR$/slimfonytest/vendor/symfony/polyfill-mbstring" />
+      <path value="$PROJECT_DIR$/slimfonytest/vendor/symfony/var-dumper" />
+      <path value="$PROJECT_DIR$/slimfonytest/vendor/slimfony/slimfony" />
+      <path value="$PROJECT_DIR$/slimfonytest/vendor/composer" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2" />

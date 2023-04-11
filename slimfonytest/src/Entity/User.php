@@ -9,9 +9,9 @@ use Slimfony\ORM\Mapping\Entity;
 #[Entity('user')]
 class User extends BaseEntity
 {
-    #[Column('id', 'int', true, unsigned: true, autoIncrement: true)]
+    #[Column('id', 'serial', primaryKey: true, unsigned: true, autoIncrement: true)]
     private int $id;
 
-    #[Column('username', 'varchar')]
+    #[Column('username', 'varchar(255)')]
     private string $username;
 }
