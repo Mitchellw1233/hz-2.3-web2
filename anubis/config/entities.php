@@ -4,6 +4,8 @@
  * @return array<int, class-string> as FQN
  */
 return [
-    \App\Entity\User::class,
-    \App\Entity\Post::class,
+    \App\Entity\Teacher::class,
+    \App\Entity\Exam::class,
+    \App\Entity\Student::class,
+    \App\Entity\ExamRegistration::class,
 ];

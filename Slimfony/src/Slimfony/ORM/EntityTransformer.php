@@ -2,6 +2,7 @@
 
 namespace Slimfony\ORM;
 
+use Slimfony\ORM\Exception\NoRelationResultException;
 use Slimfony\ORM\Mapping\Column;
 use Slimfony\ORM\Mapping\FKInterface;
 use Slimfony\ORM\Mapping\Relation;
@@ -51,7 +52,7 @@ class EntityTransformer
 
             // If column has relation, need to set all the values
             if ($column->hasRelation()) {
-                $prop->setValue($class, $this->fromRelation($column, $dbResult));
+                $prop->setValue($class, $this->fromRelationResult($column, $dbResult));
                 continue;
             }
 
@@ -82,8 +83,17 @@ class EntityTransformer
                 throw new \LogicException($e->getMessage());
             }
             $prop->setAccessible(true);
+            $value = $prop->getValue($entity);
 
-            $result[$column->name] = $prop->getValue($entity);
+            if ($value instanceof Entity && $column->hasRelation()) {
+                try {
+                    $value = $this->toRelationResult($entity, $column, $value);
+                } catch (NoRelationResultException) {
+                    continue;
+                }
+            }
+
+            $result[$column->name] = $value;
         }
 
         return $result;
@@ -92,9 +102,9 @@ class EntityTransformer
     /**
      * @param Column $column
      * @param array<string, mixed> $dbResult
-     * @return mixed
+     * @return Entity
      */
-    protected function fromRelation(Column $column, array $dbResult): mixed
+    protected function fromRelationResult(Column $column, array $dbResult): Entity
     {
         if (!array_key_exists($column->name, $dbResult)) {
             throw new \LogicException(sprintf('column `%s` is not in result set', $column->name));
@@ -119,5 +129,36 @@ class EntityTransformer
         //  If not, return list of result.....
         //  @see https://www.doctrine-project.org/projects/doctrine-orm/en/2.14/reference/association-mapping.html
         throw new \LogicException('Reversed lookup not yet implemented');
+    }
+
+    protected function toRelationResult(Entity $entity, Column $column, Entity $rEntity): Entity
+    {
+        /** @var Relation $relation */
+        $relation = $column->getRelation();
+
+        // TODO: could be others which return results when more relations implemented
+        if (!$relation instanceof FKInterface) {
+            throw new NoRelationResultException();
+        }
+        $map = $this->mappingResolver->resolve($rEntity::class);
+        $rPropName = null;
+
+        foreach ($map->columns as $propName => $rColumn) {
+            if ($rColumn->name === $relation->getTargetReferenceColumn()) {
+                $rPropName = $propName;
+            }
+        }
+
+        if ($rPropName === null) {
+            throw new \LogicException(sprintf('%s: Cannot find reference `%s`',
+                $entity::class, $relation->getTargetReferenceColumn()));
+        }
+
+        if (!isset($rEntity->$rPropName)) {
+            throw new \RuntimeException(sprintf('%s: %s is not yet persisted, 
+                so reference is not yet accessible',$entity::class, $rEntity::class));
+        }
+
+        return $rEntity->$rPropName;
     }
 }

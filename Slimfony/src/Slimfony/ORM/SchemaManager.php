@@ -71,14 +71,11 @@ class SchemaManager
 
     /**
      * Assuming POSTGRESQL
-     *
-     * @param array<int, class-string> $entities
      */
-    public function delete(array $entities): void
+    public function delete(): void
     {
-        foreach ($this->mappingResolver->resolveAll($entities) as $map) {
-            $this->driver->execute(sprintf('DROP TABLE IF EXISTS "%s" CASCADE', $map->entity->name));
-        }
+        $this->driver->execute('DROP SCHEMA public CASCADE');
+        $this->driver->execute('CREATE SCHEMA public');
     }
 
     /**
