@@ -1,4 +1,4 @@
-# Docker purely for /slimfonytest app
+# Docker purely for /anubis app
 
 version: "3.9"
 
@@ -10,7 +10,7 @@ services:
 #    volumes:
 #      - ./nginx.conf:/etc/nginx/conf.d/default.conf
 
-  slimfony-test:
+  anubis:
     restart: on-failure
     build: .
 #    command: tail -F anything  # just for testing
@@ -22,9 +22,9 @@ services:
 #        NODE_ENV: development
 #    image: cs-api-strapi:dev
     volumes:
-      - /opt/slimfonytest/vendor  # excluded
+      - /opt/anubis/vendor  # excluded
       - ./Slimfony/.:/opt/Slimfony
-      - ./slimfonytest/.:/opt/slimfonytest
+      - ./anubis/.:/opt/anubis
     ports:
       - '6969:80'
 

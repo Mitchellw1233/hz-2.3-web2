@@ -1,5 +1,5 @@
 {
-  "name": "slimfonytest/slimfonytest",
+  "name": "anubis/anubis",
   "description": "Test app for the official Slimfony framework",
   "type": "project",
   "autoload": {

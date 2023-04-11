@@ -4,15 +4,15 @@ RUN apt-get -y update && apt-get -y install git && apt-get -y install libpq-dev 
 COPY --from=composer:2.5.4 /usr/bin/composer /usr/bin/composer
 WORKDIR /opt
 COPY Slimfony/ /opt/Slimfony
-WORKDIR /opt/slimfonytest
-COPY slimfonytest/composer.json slimfonytest/composer.lock? /opt/slimfonytest/
+WORKDIR /opt/anubis
+COPY anubis/composer.json anubis/composer.lock? /opt/anubis/
 RUN composer install --no-interaction
-COPY slimfonytest/ /opt/slimfonytest
-#WORKDIR /opt/slimfonytest/app
-#COPY slimfonytest/ /opt/slimfonytest/app
+COPY anubis/ /opt/anubis
+#WORKDIR /opt/anubis/app
+#COPY anubis/ /opt/anubis/app
 
-WORKDIR /opt/slimfonytest/public
-CMD ["php", "-S", "slimfony-test:80"]
-#CMD ["/bin/bash", "-c", "composer install --no-interaction;cd public;php -S slimfony-test:80"]
-#CMD ["composer", "install",  "--no-interaction", "", "cd public", "&", "php", "-S", "slimfony-test:80"]
+WORKDIR /opt/anubis/public
+CMD ["php", "-S", "anubis:80"]
+#CMD ["/bin/bash", "-c", "composer install --no-interaction;cd public;php -S anubis:80"]
+#CMD ["composer", "install",  "--no-interaction", "", "cd public", "&", "php", "-S", "anubis:80"]
 #CMD ["tail", "-f", "/dev/null"]
