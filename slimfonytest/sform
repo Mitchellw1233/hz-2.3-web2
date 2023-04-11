@@ -1,5 +1,7 @@
 <?php
 
+require __DIR__.'/vendor/autoload.php';
+
 use Slimfony\DependencyInjection\ContainerBuilder;
 use Slimfony\DependencyInjection\Reference;
 use Slimfony\ORM\SchemaManager;
@@ -22,31 +24,36 @@ $cb->registerAll($services);
 
 $container = $cb->getContainer();
 
-try {
-    if (count($argv) > 0) {
-        $driver = $container->get(\Slimfony\ORM\Driver::class);
-        $sg = new SchemaManager(
-            $driver,
-            $container->get(\Slimfony\ORM\Resolver\MappingResolver::class),
-            $container->get(\Slimfony\Config\ConfigLoader::class),
-        );
+$accepted = ['fresh', 'generate'];
 
-        $driver->beginTransaction();
-        switch ($argv[1]) {
-            case 'fresh':
-                echo 'deleting database...';
-                $sg->delete();
-                $sg->generate($entities);
-                break;
-            case 'generate':
-                echo 'generating...';
-                $sg->generate($entities);
-                break;
-            default:
-                echo 'successful!';
-        }
-        $driver->commit();
+try {
+    if (count($argv) < 1 || !in_array($argv[1], $accepted)) {
+        throw new LogicException('Not a valid argument');
     }
+
+    $driver = $container->get(\Slimfony\ORM\Driver::class);
+    $sg = new SchemaManager(
+        $driver,
+        $container->get(\Slimfony\ORM\Resolver\MappingResolver::class),
+        $container->get(\Slimfony\Config\ConfigLoader::class),
+    );
+
+    $driver->beginTransaction();
+    switch ($argv[1]) {
+        case 'fresh':
+            echo 'deleting database...' . PHP_EOL;
+            $sg->delete($entities);
+            echo 'generating database...'. PHP_EOL;
+            $sg->generate($entities);
+            break;
+        case 'generate':
+            echo 'generating database...' . PHP_EOL;
+            $sg->generate($entities);
+            break;
+    }
+
+    $driver->commit();
+    echo 'successful!' . PHP_EOL;
 } catch (Throwable $e) {
     echo $e->getMessage();
 }

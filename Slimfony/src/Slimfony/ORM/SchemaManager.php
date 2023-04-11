@@ -33,12 +33,11 @@ class SchemaManager
 
         foreach ($maps as $map) {
             $name = $map->entity->name;
-//            $statements[] = 'DROP TABLE IF EXISTS ' . $name;
-            $sql = "CREATE TABLE $name (";
+            $cols = [];
 
             foreach ($map->columns as $column) {
                 if ($column->autoIncrement && !str_contains(strtoupper($column->type), 'SERIAL')) {
-                    throw new \InvalidArgumentException(sprintf('table `%s`.`%s`: `%s` should be a SERIAL type, 
+                    throw new \InvalidArgumentException(sprintf('table `%s.%s`: `%s` should be a SERIAL type, 
                         because it has a autoIncrement', $map->entity->name, $column->name, $column->type));
                 }
 
@@ -46,7 +45,7 @@ class SchemaManager
                     $column->unique = false;
                 }
 
-                $sql .= $column->name
+                $cols[] = '"' . $column->name . '"'
                     . ' ' . strtoupper($column->type)
                     . ($column->primaryKey ? ' PRIMARY KEY' : '')
                     . ($column->unique ? ' UNIQUE' : '')
@@ -58,10 +57,8 @@ class SchemaManager
                 }
             }
 
-            $statements[] = $sql . ')';
+            $statements[] = sprintf('CREATE TABLE "%s" (%s)', $name, implode(', ', $cols));
         }
-
-        // TODO: First generate schema
 
         foreach ($statements as $statement) {
             $this->driver->execute($statement);
@@ -74,10 +71,14 @@ class SchemaManager
 
     /**
      * Assuming POSTGRESQL
+     *
+     * @param array<int, class-string> $entities
      */
-    public function delete(): void
+    public function delete(array $entities): void
     {
-        $this->driver->execute('DROP SCHEMA IF EXISTS ' . $this->configLoader->getDb()['database'] . ' CASCADE');
+        foreach ($this->mappingResolver->resolveAll($entities) as $map) {
+            $this->driver->execute(sprintf('DROP TABLE IF EXISTS "%s" CASCADE', $map->entity->name));
+        }
     }
 
     /**
@@ -98,7 +99,7 @@ class SchemaManager
         }
         $relationMap = $this->mappingResolver->resolve($relation->getTargetEntity());
 
-        return sprintf('ALTER TABLE %s ADD CONSTRAINT fk_%s_%s FOREIGN KEY (%s) REFERENCES %s (%s)',
+        return sprintf('ALTER TABLE "%s" ADD CONSTRAINT fk_%s_%s FOREIGN KEY ("%s") REFERENCES "%s" ("%s")',
             $entity->name,
             $entity->name,
             $column->name,

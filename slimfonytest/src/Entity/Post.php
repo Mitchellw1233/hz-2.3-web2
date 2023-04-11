@@ -10,7 +10,7 @@ use Slimfony\ORM\Mapping\FKRelation;
 #[Entity('post')]
 class Post extends BaseEntity
 {
-    #[Column('id', 'integer', primaryKey: true, unsigned: true, autoIncrement: true)]
+    #[Column('id', 'serial', primaryKey: true, unsigned: true, autoIncrement: true)]
     private int $id;
 
     #[FKRelation(User::class, 'id')]
