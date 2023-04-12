@@ -38,24 +38,23 @@ class Template
 
         // Blocks
         $self = $this;
-        $parameters['start_block'] = function (string $blockName) use ($self) {
-            $this->currentBlock = $blockName;
+        $parameters['start_block'] = static function (string $blockName) use ($self) {
+            $self->currentBlock = $blockName;
             ob_start();
         };
-        $parameters['end_block'] = function () use ($self) {
+        $parameters['end_block'] = static function () use ($self) {
             if ($self->currentBlock === null) {
                 throw new \LogicException('No block to be ended');
             }
-            $this->blocks[$this->currentBlock] = ob_get_clean();
+            $self->blocks[$self->currentBlock] = ob_get_clean();
         };
-        $parameters['get_block'] = function (string $blockName) use ($self) {
+        $parameters['get_block'] = static function (string $blockName) use ($self) {
             return $self->blocks[$blockName] ?? '';
         };
 
+        // Initiate template
         extract($parameters);
-
         ob_start();
-
         include ($file);
 
         return ob_get_clean();

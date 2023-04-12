@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Interface\IdentifierInterface;
+use App\Entity\Trait\IdentifierTrait;
 use Slimfony\ORM\Entity as BaseEntity;
 use Slimfony\ORM\Mapping\Column;
 use Slimfony\ORM\Mapping\Entity;
@@ -11,7 +12,7 @@ use Slimfony\ORM\Mapping\FKRelation;
 #[Entity('exam')]
 class Exam extends BaseEntity implements IdentifierInterface
 {
-//    use IdentifierTrait;
+    use IdentifierTrait;
 
     #[Column(name: 'id', type: 'serial', primaryKey: true, autoIncrement: true)]
     private int $id;
@@ -37,15 +38,6 @@ class Exam extends BaseEntity implements IdentifierInterface
         $this->teacher = $teacher;
         $this->examDate = $examDate;
         $this->credits = $credits;
-    }
-
-    public function getId(): int
-    {
-        if (!isset($this->id)) {
-            throw new \LogicException('Called id while not initialized yet');
-        }
-
-        return $this->id;
     }
 
     /**

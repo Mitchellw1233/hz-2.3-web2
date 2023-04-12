@@ -12,8 +12,9 @@
   </component>
   <component name="PhpIncludePathManager">
     <include_path>
-      <path value="$PROJECT_DIR$/vendor/**" />
-      <path value="$PROJECT_DIR$/Slimfony/vendor/**" />
+      <path value="$PROJECT_DIR$/Slimfony/vendor" />
+      <path value="$PROJECT_DIR$/anubis/vendor" />
+      <path value="$PROJECT_DIR$/anubis/templates" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2" />

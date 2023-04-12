@@ -1,3 +1,5 @@
+<?php include dirname(__DIR__).'/util/common/ide_helper.php'; ?>
+
 <?php $start_block('body'); ?>
 
 <h1><?php echo $global['basePath'] ?></h1>

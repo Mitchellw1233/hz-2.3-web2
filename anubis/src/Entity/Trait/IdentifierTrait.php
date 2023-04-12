@@ -2,11 +2,8 @@
 
 namespace App\Entity\Trait;
 
-use Slimfony\ORM\Mapping\Column;
-
 trait IdentifierTrait
 {
-    #[Column(name: 'id', type: 'serial', autoIncrement: true)]
     private int $id;
 
     public function getId(): int

@@ -2,13 +2,18 @@
 
 namespace Slimfony\Routing;
 
+use App\Entity\Interface\UserInterface;
+use Slimfony\HttpFoundation\Request;
 use Slimfony\HttpFoundation\Response;
+use Slimfony\HttpKernel\Kernel;
 use Slimfony\Templating\Template;
 use Slimfony\DependencyInjection\Container;
 
 abstract class AbstractController
 {
     private Template $template;
+    private ?Request $request = null;
+
     /**
      * @param Container $container
      */
@@ -27,5 +32,28 @@ abstract class AbstractController
     {
         $content = $this->template->render($viewPath, $parameters);
         return new Response($content);
+    }
+
+    public function getRequest(): Request
+    {
+        if ($this->request === null) {
+            $this->request = Kernel::$request ?? throw new \LogicException('Kernel did not set a request');
+        }
+
+        return $this->request;
+    }
+
+    public function setUser(UserInterface $user): void
+    {
+        $this->getRequest()->getSession()->set('_user', serialize($user));
+    }
+
+    public function getUser(): ?UserInterface
+    {
+        if (!$this->getRequest()->getSession()->has('_user')) {
+            return null;
+        }
+
+        return unserialize($this->getRequest()->getSession()->get('_user'), UserInterface::class);
     }
 }
