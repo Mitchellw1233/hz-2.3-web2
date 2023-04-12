@@ -39,8 +39,12 @@ class EntityQueryBuilder extends AbstractQueryBuilder
     {
         $result = $this->driver->execute($this->build(), $this->getParameters());
 
+        if ($this->isSingleResult && empty($result)) {
+            return null;
+        }
+
         if ($this->isSingleResult) {
-            return $this->entityTransformer->fromDBResult($this->className, $result);
+            return $this->entityTransformer->fromDBResult($this->className, $result[0]);
         }
 
         $entities = [];

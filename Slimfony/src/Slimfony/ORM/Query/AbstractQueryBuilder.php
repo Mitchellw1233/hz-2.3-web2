@@ -21,6 +21,9 @@ abstract class AbstractQueryBuilder
 
     public function __construct()
     {
+        $this->sql = null;
+        $this->statements = [];
+        $this->parameters = [];
     }
 
     public function build(): string

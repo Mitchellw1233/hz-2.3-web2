@@ -23,18 +23,18 @@ class Template
      * @return string
      * @throws \LogicException
      */
-    public function render(string $viewPath, array $parameters = []): string
+    public function render(string $viewPath, array $parameters = [], array $globals = []): string
     {
         if (!file_exists($file = $this->path.$viewPath)) {
-            throw new \LogicException(sprintf('The file %s could not be found.', $viewPath));
+            throw new \LogicException(sprintf('The template %s could not be found.', $viewPath));
         }
 
-        if (array_key_exists('global', $parameters)) {
+        if (array_key_exists('globals', $parameters)) {
             throw new \InvalidArgumentException('global is a reserved keyword');
         }
 
         // Global
-        $parameters['global'] = $this->getGlobalVars();
+        $parameters['globals'] = array_merge($this->getGlobalVars(), $globals);
 
         // Blocks
         $self = $this;

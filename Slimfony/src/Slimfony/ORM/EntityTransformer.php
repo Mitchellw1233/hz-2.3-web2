@@ -61,7 +61,15 @@ class EntityTransformer
                 throw new \LogicException(sprintf('column `%s` is not in result set', $column->name));
             }
 
-            $prop->setValue($class, $dbResult[$column->name]);
+            preg_match('#^[^\(]*#', $column->type, $shortType);
+            $shortType = $shortType[0];
+
+            $value = $dbResult[$column->name];
+            if (array_key_exists($shortType, DBTypeMapper::types())) {
+                $value = DBTypeMapper::types()[$shortType]['from']($value);
+            }
+
+            $prop->setValue($class, $value);
         }
 
         return $class;
@@ -91,6 +99,13 @@ class EntityTransformer
                 } catch (NoRelationResultException) {
                     continue;
                 }
+            }
+
+            preg_match('#^[^\(]*#', $column->type, $shortType);
+            $shortType = $shortType[0];
+
+            if (array_key_exists($shortType, DBTypeMapper::types())) {
+                $value = DBTypeMapper::types()[$shortType]['to']($value);
             }
 
             $result[$column->name] = $value;

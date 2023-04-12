@@ -30,8 +30,10 @@ abstract class AbstractController
      */
     public function render(string $viewPath, array $parameters = []): Response
     {
-        $content = $this->template->render($viewPath, $parameters);
-        return new Response($content);
+        return new Response($this->template->render($viewPath, $parameters, [
+            'request' => $this->getRequest(),
+            'user' => $this->getUser(),
+        ]));
     }
 
     public function getRequest(): Request
