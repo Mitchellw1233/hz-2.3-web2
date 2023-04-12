@@ -60,9 +60,9 @@ $slimfony = [
  * @var array<string, array{
  *     args?: array<int, mixed|Reference>,
  *     methods?: array<int, array{method: string, args?: array<int, mixed|Reference>}>
- * }> $slimfonytest
+ * }> $anubis
  */
-$slimfonytest = [
+$anubis = [
     \App\Controller\BlogApiController::class => [
         // Container
     ],
@@ -74,4 +74,4 @@ $slimfonytest = [
  *     methods?: array<int, array{method: string, args?: array<int, mixed|Reference>}>
  * }>
  */
-return [...$slimfony, ...$slimfonytest];
+return [...$slimfony, ...$anubis];

@@ -2,6 +2,7 @@
 
 namespace Slimfony\ORM\Resolver;
 
+use Slimfony\ORM\Mapping\Column;
 use Slimfony\ORM\Mapping\Map;
 
 class MappingResolver
@@ -18,7 +19,13 @@ class MappingResolver
             throw new \LogicException('Entity "'.$entity.'" does not exist');
         }
 
-        $map = new Map($rEntity->getAttributes()[0]->newInstance(), []);
+        $entityAttributes = $rEntity->getAttributes();
+
+        if (!isset($entityAttributes[0])) {
+            throw new \LogicException("$entity: No Mapping\Entity attribute found");
+        }
+
+        $map = new Map($entityAttributes[0]->newInstance(), []);
 
         foreach ($rEntity->getProperties() as $property) {
             $propertyAttributes = $property->getAttributes();
@@ -47,7 +54,8 @@ class MappingResolver
      *
      * @return array<int, Map>
      */
-    public function resolveAll(array $entities): array {
+    public function resolveAll(array $entities): array
+    {
         $mapping = [];
 
         foreach ($entities as $entity) {

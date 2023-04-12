@@ -42,7 +42,7 @@ try {
     switch ($argv[1]) {
         case 'fresh':
             echo 'deleting database...' . PHP_EOL;
-            $sg->delete($entities);
+            $sg->delete();
             echo 'generating database...'. PHP_EOL;
             $sg->generate($entities);
             break;
