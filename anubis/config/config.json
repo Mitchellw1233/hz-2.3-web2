@@ -1,5 +1,13 @@
 {
   "routes": {
+    "admin.exam.list": {
+      "path": "/admin/exam",
+      "controller": "App\\Controller\\Admin\\ExamController::list",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
     "api.post.list": {
       "path": "/api/posts",
       "controller": "App\\Controller\\BlogApiController::list"

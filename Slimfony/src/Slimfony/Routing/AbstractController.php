@@ -23,7 +23,7 @@ abstract class AbstractController
      * @param array<string, mixed> $parameters
      * @return Response
      */
-    public function render(string $viewPath, array $parameters): Response
+    public function render(string $viewPath, array $parameters = []): Response
     {
         $content = $this->template->render($viewPath, $parameters);
         return new Response($content);
