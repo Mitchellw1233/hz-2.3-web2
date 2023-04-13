@@ -70,16 +70,24 @@ class InternalQueryBuilder extends AbstractQueryBuilder
     }
 
     /**
+     * Automatically sets parameters
+     *
      * @param array<string, string> $inserts ['column' => ':param']
      *
      * @return $this
      */
     public function values(array $inserts): static
     {
+        $paramKeys = [];
+        foreach ($inserts as $key => $value) {
+            $paramKeys[] = ':' . $key;
+        }
+
         $this->statements[] = sprintf('(%s) VALUES (%s)',
             implode(', ', array_keys($inserts)),
-            implode(', ', array_values($inserts))
+            implode(', ', $paramKeys)
         );
+        $this->setParameters($inserts);
 
         return $this;
     }
@@ -92,17 +100,20 @@ class InternalQueryBuilder extends AbstractQueryBuilder
     }
 
     /**
+     * Automatically sets parameters
+     *
      * @param array<string, string> $updates ['column' => ':param']
      *
      * @return $this
      */
     public function set(array $updates): static
     {
-        $values = '';
+        $values = [];
         foreach ($updates as $column => $value) {
-            $values .= sprintf('%s = %s', $column, $value);
+            $values[] = sprintf('%s = :%s', $column, $column);
         }
-        $this->statements[] = 'SET ' . $values;
+        $this->statements[] = 'SET ' . implode(', ', $values);
+        $this->setParameters($updates);
 
         return $this;
     }
@@ -110,7 +121,13 @@ class InternalQueryBuilder extends AbstractQueryBuilder
     // Delete
     public function delete(string $table): static
     {
-        $this->statements[] = 'DELETE ' . $table;
+        $this->statements[] = 'DELETE FROM ' . $table;
+        return $this;
+    }
+
+    public function returning(string $clause = '*'): static
+    {
+        $this->statements[] = 'RETURNING ' . $clause;
         return $this;
     }
 }

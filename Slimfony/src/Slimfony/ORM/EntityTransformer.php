@@ -85,6 +85,10 @@ class EntityTransformer
         $result = [];
         $map = $this->mappingResolver->resolve($entity::class);
         foreach ($map->columns as $propName => $column) {
+            if ($column->autoIncrement) {
+                continue;
+            }
+
             try {
                 $prop = new \ReflectionProperty($entity::class, $propName);
             } catch (\ReflectionException $e) {
@@ -146,8 +150,13 @@ class EntityTransformer
         throw new \LogicException('Reversed lookup not yet implemented');
     }
 
-    protected function toRelationResult(Entity $entity, Column $column, Entity $rEntity): Entity
+    protected function toRelationResult(Entity $entity, Column $column, Entity $rEntity): mixed
     {
+        if ($rEntity->isNew()) {
+            throw new \RuntimeException(sprintf('%s: %s is not yet persisted, 
+                so reference is not yet accessible',$entity::class, $rEntity::class));
+        }
+
         /** @var Relation $relation */
         $relation = $column->getRelation();
 
@@ -155,12 +164,13 @@ class EntityTransformer
         if (!$relation instanceof FKInterface) {
             throw new NoRelationResultException();
         }
-        $map = $this->mappingResolver->resolve($rEntity::class);
+        $rMap = $this->mappingResolver->resolve($rEntity::class);
         $rPropName = null;
 
-        foreach ($map->columns as $propName => $rColumn) {
+        foreach ($rMap->columns as $propName => $rColumn) {
             if ($rColumn->name === $relation->getTargetReferenceColumn()) {
                 $rPropName = $propName;
+                break;
             }
         }
 
@@ -168,12 +178,9 @@ class EntityTransformer
             throw new \LogicException(sprintf('%s: Cannot find reference `%s`',
                 $entity::class, $relation->getTargetReferenceColumn()));
         }
+        $rEntityProp = new \ReflectionProperty($rEntity::class, $rPropName);
+        $rEntityProp->setAccessible(true);
 
-        if (!isset($rEntity->$rPropName)) {
-            throw new \RuntimeException(sprintf('%s: %s is not yet persisted, 
-                so reference is not yet accessible',$entity::class, $rEntity::class));
-        }
-
-        return $rEntity->$rPropName;
+        return $rEntityProp->getValue($rEntity);
     }
 }

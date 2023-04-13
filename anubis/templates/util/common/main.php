@@ -22,6 +22,13 @@
         $(document).ready(function () {
             $('[data-table]').DataTable();
         });
+        document.querySelectorAll('[data-confirm]').forEach((btn) => {
+            btn.addEventListener('click', (e) => {
+                if (!confirm('Are you sure?')) {
+                    e.preventDefault();
+                }
+            });
+        })
     </script>
 </body>
 </html>

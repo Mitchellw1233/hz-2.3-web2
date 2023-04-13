@@ -4,7 +4,7 @@ namespace Slimfony\ORM;
 
 class Entity
 {
-    private bool $isNew = false;
+    private bool $isNew = true;
 
     public function isNew(): bool
     {

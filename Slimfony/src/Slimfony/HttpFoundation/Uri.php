@@ -93,4 +93,9 @@ class Uri implements UriInterface
     {
         return $this->fragment;
     }
+
+    public function getBase(): string
+    {
+        return $this->getScheme() . '://' . $this->getAuthority();
+    }
 }

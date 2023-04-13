@@ -6,12 +6,12 @@ namespace Slimfony\Routing;
 class RouteCollection
 {
     /**
-     * @var array<Route>
+     * @var array<string, Route>
      */
     protected array $routes;
 
     /**
-     * @param array<Route> $routes
+     * @param array<string, Route> $routes
      */
     public function __construct(array $routes=[])
     {
@@ -24,7 +24,7 @@ class RouteCollection
      */
     public function add(Route $route): void
     {
-        $this->routes[] = $route;
+        $this->routes[$route->getName()] = $route;
     }
 
     /**
@@ -33,15 +33,15 @@ class RouteCollection
      */
     public function remove(Route $route): void
     {
-        if (false !== $key = array_search($route, $this->routes, true)) {
-            unset($this->routes[$key]);
+        if (array_key_exists($route->getName(), $this->routes)) {
+            unset($this->routes[$route->getName()]);
         }
     }
 
     /**
      * Returns all routes
      *
-     * @return array<Route>
+     * @return array<string, Route>
      */
     public function all(): array
     {

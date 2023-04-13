@@ -1,11 +1,33 @@
 {
   "routes": {
     "admin.exam.list": {
-      "path": "/admin/exam",
+      "path": "/admin/exams",
       "controller": "App\\Controller\\Admin\\ExamController::list",
+      "methods": [
+        "GET"
+      ]
+    },
+    "admin.exam.create": {
+      "path": "/admin/exams/create",
+      "controller": "App\\Controller\\Admin\\ExamController::create",
       "methods": [
         "GET",
         "POST"
+      ]
+    },
+    "admin.exam.single": {
+      "path": "/admin/exams/{id}",
+      "controller": "App\\Controller\\Admin\\ExamController::single",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    "admin.exam.delete": {
+      "path": "/admin/exams/{id}/delete",
+      "controller": "App\\Controller\\Admin\\ExamController::delete",
+      "methods": [
+        "GET"
       ]
     }
   },

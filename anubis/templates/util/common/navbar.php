@@ -35,7 +35,7 @@ class NavCollection
 $_studentNav = [
     new NavItem('/', 'Dashboard', $request->getUri()->getPath() === '/'),
     new NavItem('/grades', 'Cijfers', $request->getUri()->getPath() === '/grades'),
-    new NavItem('/exams', 'Tentamens', $request->getUri()->getPath() === '/exams'),
+    new NavItem('/registrations', 'Tentameninschrijvingen', $request->getUri()->getPath() === '/registrations'),
 ];
 $_teacherNav = [
     new NavItem('/', 'Dashboard', $request->getUri()->getPath() === '/'),
@@ -54,7 +54,7 @@ if ($user instanceof Student) {
 } elseif ($user instanceof Admin) {
     $_nav = $_adminNav;
 } else {
-    $_nav = $_studentNav;  // TODO: REMOVE!!
+    $_nav = $_adminNav;  // TODO: REMOVE!!
 }
 ?>
 

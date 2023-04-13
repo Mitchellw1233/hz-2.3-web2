@@ -45,7 +45,8 @@ abstract class AbstractQueryBuilder
                 throw new \InvalidArgumentException(sprintf('Parameter `%s` is non-scalar', $name));
             }
         }
-        $this->parameters = $parameters;
+
+        $this->parameters = array_merge($this->parameters, $parameters);
 
         return $this;
     }

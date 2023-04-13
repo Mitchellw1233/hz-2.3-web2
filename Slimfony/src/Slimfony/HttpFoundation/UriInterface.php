@@ -153,4 +153,11 @@ interface UriInterface
      * @return string The URI fragment.
      */
     public function getFragment(): string;
+
+    /**
+     * Scheme and authority, without the path etc
+     *
+     * @return string
+     */
+    public function getBase(): string;
 }
