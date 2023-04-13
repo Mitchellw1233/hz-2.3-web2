@@ -53,6 +53,8 @@ if ($user instanceof Student) {
     $_nav = $_teacherNav;
 } elseif ($user instanceof Admin) {
     $_nav = $_adminNav;
+} else {
+    $_nav = $_studentNav;  // TODO: REMOVE!!
 }
 ?>
 

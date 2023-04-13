@@ -13,7 +13,7 @@ $metaDescription = $title;
 
 <div class="container p-4">
     <h1 class="mb-4"><?php echo $title ?></h1>
-    <table class="table">
+    <table class="table" data-table>
         <thead>
             <tr>
                 <th scope="col">#</th>
