@@ -78,7 +78,7 @@ $editable ??= false;
                         <?php
                             if ($student !== null) {
                                 if ($registrations === []) {
-                                    echo '<option value selected></option>';
+                                    echo '<option value selected disabled></option>';
                                 }
 
                                 foreach ($registrations as $registration) {
@@ -88,11 +88,11 @@ $editable ??= false;
                                     );
                                 }
                             } else {
-                                echo '<option value selected></option>';
+                                echo '<option value selected disabled></option>';
                             }
 
                             foreach ($exams as $exam) {
-                                if ($student === null) {
+                                if ($student !== null) {
                                     foreach ($registrations as $registration) {
                                         if ($registration->getExam()->getId() === $exam->getId()) {
                                             continue 2;

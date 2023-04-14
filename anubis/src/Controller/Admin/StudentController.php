@@ -38,7 +38,7 @@ class StudentController extends AbstractAdminController
     public function single(int $id): Response
     {
         if (strtoupper($this->getRequest()->getMethod()) === 'POST') {
-            $student = $this->entityManager->persist($this->updateStudentFromRequest());
+            $student = $this->entityManager->persist($this->updateStudentFromRequest($id));
             $this->entityManager->flush();
 
             return $this->redirectToRoute('admin.student.single', ['id' => $student->getId()]);
@@ -94,9 +94,10 @@ class StudentController extends AbstractAdminController
         return $this->redirectToRoute('admin.student.list');
     }
 
-    private function updateStudentFromRequest(): Student
+    private function updateStudentFromRequest(int $sid): Student
     {
         $data = $this->getRequest()->request->all();
+
         if (!isset($data['firstname'], $data['lastname'], $data['email'], $data['birth_date'])) {
             throw new BadRequestException('Not all fields were filled in');
         }
@@ -105,43 +106,52 @@ class StudentController extends AbstractAdminController
         $student = $this->entityManager->getQueryBuilder(Student::class)
             ->where('id = :id')
             ->setParameters([
-                'id' => $data['id'],
+                'id' => $sid,
             ])
             ->limit(1)
             ->result();
+
         try {
             $student->setFirstName($data['firstname']);
             $student->setLastName($data['lastname']);
             $student->setEmail($data['email']);
             $student->setBirthDate(new \DateTime($data['birth_date']));
 
+            /** @var ExamRegistration[] $registrations */
             $registrations = $this->entityManager->getQueryBuilder(ExamRegistration::class)
-                ->where('student_id = :id')
+                ->where('student_id = :student_id')
                 ->setParameters([
-                    'id' => $data['id']
+                    'student_id' => $sid
                 ])
                 ->result();
 
-            if (!isset($data['exam_ids'])) {
-                foreach ($data['exam_ids'] as $id) {
-                    $exam = $this->entityManager->getQueryBuilder(Exam::class)
-                        ->where('id = :id')
-                        ->setParameters([
-                            'id' => $id
-                        ])
-                        ->limit(1)
-                        ->result();
+            if (!is_array($data['exam_ids'])) {
+                $data['exam_ids'] = [$data['exam_ids']];
+            }
 
-                    foreach ($registrations as $registration) {
-                        if ($exam->getId() === $registration->getExam()->getId()) {
-                            continue 2;
-                        }
-                    }
-
-                    $registration = new ExamRegistration($exam, $student, new \DateTime(), null, null);
-                    $this->entityManager->persist($registration);
+            foreach ($registrations as $registration) {
+                if (!in_array($registration->getExam()->getId(), $data['exam_ids'])) {
+                    $this->entityManager->remove($registration);
+                    $this->entityManager->flush();
+                } else {
+                    $i = array_search($registration->getExam()->getId(), $data['exam_ids']);
+                    unset($data['exam_ids'][$i]);
                 }
+            }
 
+            if (empty($data['exam_ids'])) return $student;
+
+            foreach ($data['exam_ids'] as $exam_id) {
+                $exam = $this->entityManager->getQueryBuilder(Exam::class)
+                    ->where('id = :id')
+                    ->setParameters([
+                        'id' => $exam_id
+                    ])
+                    ->limit(1)
+                    ->result();
+
+                $registration = new ExamRegistration($exam, $student, new \DateTime('now'), null, null);
+                $this->entityManager->persist($registration);
                 $this->entityManager->flush();
             }
         } catch (\Exception) {
@@ -165,6 +175,10 @@ class StudentController extends AbstractAdminController
             $this->entityManager->flush();
 
             if (!isset($data['exam_id'])) {
+                if (!is_array($data['exam_ids'])) {
+                    $data['exam_ids'] = [$data['exam_ids']];
+                }
+
                 foreach ($data['exam_ids'] as $id) {
                     $exam = $this->entityManager->getQueryBuilder(Exam::class)
                             ->where('id = :id')
@@ -175,17 +189,15 @@ class StudentController extends AbstractAdminController
                             ->result();
                     $registration = new ExamRegistration($exam, $student, new \DateTime('now'), null, null);
                     $this->entityManager->persist($registration);
+                    $this->entityManager->flush();
                 }
             }
 
-            $this->entityManager->flush();
-
             return $student;
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             // TODO: This could be tricky, as it could also catch other errors, but we lack validation
             //  so this is the way now.
             // TODO: add log
-            throw $e;
             throw new BadRequestException('Something went wrong with the field config');
         }
     }
