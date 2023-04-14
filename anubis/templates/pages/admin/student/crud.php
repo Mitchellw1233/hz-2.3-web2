@@ -3,10 +3,12 @@ include dirname(__DIR__, 3) .'/util/common/ide_helper.php';
 
 /**
  * @var ?\App\Entity\Student $student
+ * @var ?\App\Entity\ExamRegistration[] $registrations
+ * @var \App\Entity\Exam[] $exams
  * @var ?bool $editable
  */
-$title = 'Student - ' . ($student?->getFirstName().' '.$student?->getLastName() ?? 'create');
-$metaTitle = 'Student - ' . ($student?->getFirstName().' '.$student?->getLastName() ?? 'create') . ' - Admin';
+$title = 'Student - ' . ($student?->getName() ?? 'create');
+$metaTitle = 'Student - ' . ($student?->getName() ?? 'create') . ' - Admin';
 $metaDescription = $title;
 $editable ??= false;
 ?>
@@ -69,6 +71,41 @@ $editable ??= false;
                         $editable ? '' : 'disabled',
                         $student?->getBirthDate()->format('Y-m-d H:i') ?? ''
                     ); ?>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Exams</label>
+                    <select class="form-select" name="exam_ids[]" <?php echo $editable ? '' : 'disabled' ?> multiple>
+                        <?php
+                            if ($student !== null) {
+                                if ($registrations === []) {
+                                    echo '<option value selected></option>';
+                                }
+
+                                foreach ($registrations as $registration) {
+                                    $exam = $registration->getExam();
+                                    echo sprintf('<option value="%s" selected>%s</option>',
+                                        $exam->getId(), $exam->getName()
+                                    );
+                                }
+                            } else {
+                                echo '<option value selected></option>';
+                            }
+
+                            foreach ($exams as $exam) {
+                                if ($student === null) {
+                                    foreach ($registrations as $registration) {
+                                        if ($registration->getExam()->getId() === $exam->getId()) {
+                                            continue 2;
+                                        }
+                                    }
+                                }
+
+                                echo sprintf('<option value="%s">%s</option>',
+                                    $exam->getId(), $exam->getName()
+                                );
+                            }
+                        ?>
+                    </select>
                 </div>
                 <?php if ($editable === true) {
                     echo '

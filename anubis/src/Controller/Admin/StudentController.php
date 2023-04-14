@@ -2,6 +2,8 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Exam;
+use App\Entity\ExamRegistration;
 use App\Entity\Student;
 use Slimfony\DependencyInjection\Container;
 use Slimfony\HttpFoundation\RedirectResponse;
@@ -50,6 +52,13 @@ class StudentController extends AbstractAdminController
                 ])
                 ->limit(1)
                 ->result(),
+            'registrations' => $this->entityManager->getQueryBuilder(ExamRegistration::class)
+                ->where('student_id = :id')
+                ->setParameters([
+                    'id' => $id,
+                ])
+                ->result(),
+            'exams' => $this->entityManager->getQueryBuilder(Exam::class)->result(),
             'editable' => $this->getRequest()->getQuery()->get('edit') === 'true',
         ]);
     }
@@ -57,14 +66,14 @@ class StudentController extends AbstractAdminController
     public function create(): Response
     {
         if (strtoupper($this->getRequest()->getMethod()) === 'POST') {
-            $student = $this->entityManager->persist($this->newStudentFromRequest());
-            $this->entityManager->flush();
-
+            $student = $this->newStudentFromRequest();
             return $this->redirectToRoute('admin.student.single', ['id' => $student->getId()]);
         }
 
         return $this->render('pages/admin/student/crud.php', [
             'student' => null,
+            'registrations' => null,
+            'exams' => $this->entityManager->getQueryBuilder(Exam::class)->result(),
             'editable' => true,
         ]);
     }
@@ -105,6 +114,36 @@ class StudentController extends AbstractAdminController
             $student->setLastName($data['lastname']);
             $student->setEmail($data['email']);
             $student->setBirthDate(new \DateTime($data['birth_date']));
+
+            $registrations = $this->entityManager->getQueryBuilder(ExamRegistration::class)
+                ->where('student_id = :id')
+                ->setParameters([
+                    'id' => $data['id']
+                ])
+                ->result();
+
+            if (!isset($data['exam_ids'])) {
+                foreach ($data['exam_ids'] as $id) {
+                    $exam = $this->entityManager->getQueryBuilder(Exam::class)
+                        ->where('id = :id')
+                        ->setParameters([
+                            'id' => $id
+                        ])
+                        ->limit(1)
+                        ->result();
+
+                    foreach ($registrations as $registration) {
+                        if ($exam->getId() === $registration->getExam()->getId()) {
+                            continue 2;
+                        }
+                    }
+
+                    $registration = new ExamRegistration($exam, $student, new \DateTime(), null, null);
+                    $this->entityManager->persist($registration);
+                }
+
+                $this->entityManager->flush();
+            }
         } catch (\Exception) {
             throw new BadRequestException('Something went wrong with the field config');
         }
@@ -115,16 +154,38 @@ class StudentController extends AbstractAdminController
     private function newStudentFromRequest(): Student
     {
         $data = $this->getRequest()->request->all();
+
         if (!isset($data['firstname'], $data['lastname'], $data['email'], $data['birth_date'])) {
             throw new BadRequestException('Not all fields were filled in');
         }
 
         try {
-            return new Student($data['firstname'], $data['lastname'], $data['email'], new \DateTime($data['birth_date']));
-        } catch (\Exception) {
+            $student = new Student($data['firstname'], $data['lastname'], $data['email'], "defaultpassword", new \DateTime($data['birth_date']));
+            $student = $this->entityManager->persist($student);
+            $this->entityManager->flush();
+
+            if (!isset($data['exam_id'])) {
+                foreach ($data['exam_ids'] as $id) {
+                    $exam = $this->entityManager->getQueryBuilder(Exam::class)
+                            ->where('id = :id')
+                            ->setParameters([
+                                'id' => $id
+                            ])
+                            ->limit(1)
+                            ->result();
+                    $registration = new ExamRegistration($exam, $student, new \DateTime('now'), null, null);
+                    $this->entityManager->persist($registration);
+                }
+            }
+
+            $this->entityManager->flush();
+
+            return $student;
+        } catch (\Exception $e) {
             // TODO: This could be tricky, as it could also catch other errors, but we lack validation
             //  so this is the way now.
             // TODO: add log
+            throw $e;
             throw new BadRequestException('Something went wrong with the field config');
         }
     }

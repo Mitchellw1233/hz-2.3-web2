@@ -121,7 +121,7 @@ class TeacherController extends AbstractAdminController
         }
 
         try {
-            return new Teacher($data['firstname'], $data['lastname'], $data['email'], new \DateTime($data['birth_date']));
+            return new Teacher($data['firstname'], $data['lastname'], $data['email'], "defaultpassword", new \DateTime($data['birth_date']));
         } catch (\Exception) {
             // TODO: This could be tricky, as it could also catch other errors, but we lack validation
             //  so this is the way now.
