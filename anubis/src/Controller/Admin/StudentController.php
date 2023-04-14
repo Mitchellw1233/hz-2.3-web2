@@ -132,12 +132,13 @@ class StudentController extends AbstractAdminController
             foreach ($registrations as $registration) {
                 if (!in_array($registration->getExam()->getId(), $data['exam_ids'])) {
                     $this->entityManager->remove($registration);
-                    $this->entityManager->flush();
                 } else {
                     $i = array_search($registration->getExam()->getId(), $data['exam_ids']);
                     unset($data['exam_ids'][$i]);
                 }
             }
+
+            $this->entityManager->flush();
 
             if (empty($data['exam_ids'])) return $student;
 
@@ -152,8 +153,9 @@ class StudentController extends AbstractAdminController
 
                 $registration = new ExamRegistration($exam, $student, new \DateTime('now'), null, null);
                 $this->entityManager->persist($registration);
-                $this->entityManager->flush();
             }
+
+            $this->entityManager->flush();
         } catch (\Exception) {
             throw new BadRequestException('Something went wrong with the field config');
         }
@@ -189,8 +191,9 @@ class StudentController extends AbstractAdminController
                             ->result();
                     $registration = new ExamRegistration($exam, $student, new \DateTime('now'), null, null);
                     $this->entityManager->persist($registration);
-                    $this->entityManager->flush();
                 }
+
+                $this->entityManager->flush();
             }
 
             return $student;
