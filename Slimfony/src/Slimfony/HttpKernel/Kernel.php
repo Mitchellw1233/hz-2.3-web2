@@ -16,6 +16,7 @@ abstract class Kernel implements KernelInterface
 {
     protected EventDispatcher $dispatcher;
     protected ControllerResolver $controllerResolver;
+    public static ?Request $request = null;
 
     public function __construct(
         protected Container $container,
@@ -39,9 +40,10 @@ abstract class Kernel implements KernelInterface
 
     public function handleRaw(Request $request): Response
     {
-        $this->dispatcher->dispatch(new RequestEvent($this, $request));
+        self::$request = $request;
+        $this->dispatcher->dispatch(new RequestEvent($this, self::$request));
 
-        $route = $request->getAttributes()->get('_route');
+        $route = self::$request->getAttributes()->get('_route');
         if (!$route instanceof Route) {
             throw new NotFoundHttpException();
         }
@@ -49,7 +51,7 @@ abstract class Kernel implements KernelInterface
         $controller = $this->controllerResolver->getController($route);
         $result = $controller(...$this->controllerResolver->getArguments($route, $controller));
 
-        $viewEvent = new ViewEvent($this, $request, $result);
+        $viewEvent = new ViewEvent($this, self::$request, $result);
         $this->dispatcher->dispatch($viewEvent);
 
         $response = $viewEvent->getResponse() ?? $result;

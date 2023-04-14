@@ -48,6 +48,16 @@ class Route
         return $this->path;
     }
 
+    public function buildPath(): string
+    {
+        $parameters = array_values($this->parameters);
+        $i = -1;
+        return preg_replace_callback('#\{[^\}]++\}#', function () use ($parameters, $i) {
+            $i++;
+            return $parameters[$i];
+        }, $this->path);
+    }
+
     /**
      * @return string
      */

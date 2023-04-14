@@ -15,7 +15,12 @@ class EntityManager
     ) {
     }
 
-    public function persist(Entity $entity): void
+    /**
+     * @template T
+     * @psalm-param Entity<T> $entity
+     * @psalm-return T
+     */
+    public function persist(Entity $entity)
     {
         $map = $this->mappingResolver->resolve($entity::class);
         $values = $this->entityTransformer->toDBResult($entity);
@@ -23,17 +28,50 @@ class EntityManager
         $qb = new InternalQueryBuilder();
         if ($entity->isNew()) {
             $qb->insert($map->entity->name)
-                ->values($values);
+                ->values($values)
+                ->returning();
         } else {
             $qb->update($map->entity->name)
-                ->set($values);
+                ->set($values)
+                ->returning();
         }
 
         if (!$this->driver->inTransaction()) {
             $this->driver->beginTransaction();
         }
 
-        $this->driver->execute($qb->build());
+        return $this->entityTransformer->fromDBResult(
+            $entity::class,
+            $this->driver->execute($qb->build(), $qb->getParameters())[0]
+        );
+    }
+
+    public function remove(Entity $entity, string $pk = 'id', string $pkProp = 'id'): void
+    {
+        $map = $this->mappingResolver->resolve($entity::class);
+
+        // Get pk value
+        try {
+            $rp = new \ReflectionProperty($entity::class, $pkProp);
+        } catch (\ReflectionException $e) {
+            throw new \InvalidArgumentException($e->getMessage());
+        }
+        $rp->setAccessible(true);
+        $pkValue = $rp->getValue($entity);
+
+        $qb = new InternalQueryBuilder();
+        $qb
+            ->delete($map->entity->name)
+            ->where(sprintf('%s = :%s', $pk, $pk))
+            ->setParameters([
+                $pk => $pkValue,
+            ]);
+
+        if (!$this->driver->inTransaction()) {
+            $this->driver->beginTransaction();
+        }
+
+        $this->driver->execute($qb->build(), $qb->getParameters());
     }
 
     public function flush(): void

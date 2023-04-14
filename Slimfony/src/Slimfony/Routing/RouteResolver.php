@@ -76,4 +76,9 @@ class RouteResolver
 
         return null;
     }
+
+    public function resolveRouteByName(string $routeName): ?Route
+    {
+        return $this->resolveRoutes()->all()[$routeName] ?? null;
+    }
 }

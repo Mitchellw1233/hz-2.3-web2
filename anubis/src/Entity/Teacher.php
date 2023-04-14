@@ -3,14 +3,18 @@
 namespace App\Entity;
 
 use App\Entity\Interface\IdentifierInterface;
+use App\Entity\Interface\UserInterface;
+use App\Entity\Trait\IdentifierTrait;
+use App\Entity\Trait\UserTrait;
 use Slimfony\ORM\Entity as BaseEntity;
 use Slimfony\ORM\Mapping\Column;
 use Slimfony\ORM\Mapping\Entity;
 
 #[Entity('teacher')]
-class Teacher extends BaseEntity implements IdentifierInterface
+class Teacher extends BaseEntity implements UserInterface, IdentifierInterface
 {
-//    use IdentifierTrait;
+    use UserTrait;
+    use IdentifierTrait;
 
     #[Column(name: 'id', type: 'serial', primaryKey: true, autoIncrement: true)]
     private int $id;
@@ -20,6 +24,8 @@ class Teacher extends BaseEntity implements IdentifierInterface
     private string $lastName;
     #[Column(name: 'email', type: 'varchar(255)')]
     private string $email;
+    #[Column(name: 'password', type: 'varchar(255)')]
+    private string $password;
     #[Column(name: 'birth_date', type: 'date')]
     private \DateTime $birthDate;
 
@@ -35,15 +41,6 @@ class Teacher extends BaseEntity implements IdentifierInterface
         $this->lastName = $lastName;
         $this->email = $email;
         $this->birthDate = $birthDate;
-    }
-
-    public function getId(): int
-    {
-        if (!isset($this->id)) {
-            throw new \LogicException('Called id while not initialized yet');
-        }
-
-        return $this->id;
     }
 
     /**
@@ -76,6 +73,11 @@ class Teacher extends BaseEntity implements IdentifierInterface
     public function setLastName(string $lastName): void
     {
         $this->lastName = $lastName;
+    }
+
+    public function getName(): string
+    {
+        return $this->getFirstName() . ' ' . $this->getLastName();
     }
 
     /**

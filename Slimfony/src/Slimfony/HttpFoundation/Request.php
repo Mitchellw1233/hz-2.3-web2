@@ -75,7 +75,7 @@ class Request implements RequestInterface
     /**
      * @var SessionInterface|null
      */
-    protected ?SessionInterface $session;
+    protected ?SessionInterface $session = null;
 
     protected UriInterface $uri;
 

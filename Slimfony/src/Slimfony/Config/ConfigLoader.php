@@ -67,12 +67,12 @@ class ConfigLoader
     protected function setRoutes(array $routes): void
     {
         $data = [];
-        foreach ($routes as $route) {
+        foreach ($routes as $name => $route) {
             // Check if methods is set, else empty array
             if (!isset($route['methods'])) {
                 $route['methods'] = null;
             }
-            $data[] = $route;
+            $data[$name] = $route;
         }
 
         $this->routes = $data;

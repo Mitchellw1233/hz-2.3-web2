@@ -63,7 +63,7 @@ $slimfony = [
  * }> $anubis
  */
 $anubis = [
-    \App\Controller\BlogApiController::class => [
+    \App\Controller\Admin\ExamController::class => [
         // Container
     ],
 ];

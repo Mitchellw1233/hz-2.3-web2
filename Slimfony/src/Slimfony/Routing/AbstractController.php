@@ -2,18 +2,25 @@
 
 namespace Slimfony\Routing;
 
+use App\Entity\Interface\UserInterface;
+use Slimfony\HttpFoundation\RedirectResponse;
+use Slimfony\HttpFoundation\Request;
 use Slimfony\HttpFoundation\Response;
+use Slimfony\HttpKernel\Kernel;
 use Slimfony\Templating\Template;
 use Slimfony\DependencyInjection\Container;
 
 abstract class AbstractController
 {
     private Template $template;
+    private ?Request $request = null;
+
     /**
      * @param Container $container
      */
     public function __construct(
         protected Container $container,
+        protected RouteResolver $routeResolver,
     ) {
         $this->template = $this->container->get(Template::class);
     }
@@ -23,9 +30,54 @@ abstract class AbstractController
      * @param array<string, mixed> $parameters
      * @return Response
      */
-    public function render(string $viewPath, array $parameters): Response
+    public function render(string $viewPath, array $parameters = []): Response
     {
-        $content = $this->template->render($viewPath, $parameters);
-        return new Response($content);
+        return new Response($this->template->render($viewPath, $parameters, [
+            'request' => $this->getRequest(),
+            'user' => $this->getUser(),
+        ]));
+    }
+
+    public function redirect(string $location): RedirectResponse
+    {
+        return new RedirectResponse($location);
+    }
+
+    public function redirectToRoute(string $routeName, array $parameters = [], array $query = []): RedirectResponse
+    {
+        $route = $this->routeResolver->resolveRouteByName($routeName);
+        if ($route === null) {
+            throw new \InvalidArgumentException(sprintf('Route name %s cannot be found', $routeName));
+        }
+        $route->fillParameters($parameters);
+
+        return new RedirectResponse(
+            $this->getRequest()->getUri()->getBase()
+            . $route->buildPath()
+            . http_build_query($query)
+        );
+    }
+
+    public function getRequest(): Request
+    {
+        if ($this->request === null) {
+            $this->request = Kernel::$request ?? throw new \LogicException('Kernel did not set a request');
+        }
+
+        return $this->request;
+    }
+
+    public function setUser(UserInterface $user): void
+    {
+        $this->getRequest()->getSession()->set('_user', serialize($user));
+    }
+
+    public function getUser(): ?UserInterface
+    {
+        if (!$this->getRequest()->getSession()->has('_user')) {
+            return null;
+        }
+
+        return unserialize($this->getRequest()->getSession()->get('_user'), UserInterface::class);
     }
 }

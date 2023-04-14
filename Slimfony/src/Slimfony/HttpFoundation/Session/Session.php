@@ -4,7 +4,7 @@ namespace Slimfony\HttpFoundation\Session;
 
 class Session implements SessionInterface
 {
-    protected string $sessionId;
+    protected ?string $sessionId;
 
     public function __construct()
     {

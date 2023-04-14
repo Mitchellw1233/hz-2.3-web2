@@ -40,7 +40,7 @@ final class InputBag extends AbstractBag
 
         $value = parent::get($key, $default);
 
-        if (!\is_scalar($value) && !$value instanceof \Stringable) {
+        if ($value !== null && !\is_scalar($value) && !$value instanceof \Stringable) {
             throw new BadRequestException(sprintf('Input value "%s" contains a non-scalar value.', $key));
         }
 

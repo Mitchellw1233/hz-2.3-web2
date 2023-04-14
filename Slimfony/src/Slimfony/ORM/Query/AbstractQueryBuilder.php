@@ -21,6 +21,9 @@ abstract class AbstractQueryBuilder
 
     public function __construct()
     {
+        $this->sql = null;
+        $this->statements = [];
+        $this->parameters = [];
     }
 
     public function build(): string
@@ -42,7 +45,8 @@ abstract class AbstractQueryBuilder
                 throw new \InvalidArgumentException(sprintf('Parameter `%s` is non-scalar', $name));
             }
         }
-        $this->parameters = $parameters;
+
+        $this->parameters = array_merge($this->parameters, $parameters);
 
         return $this;
     }
