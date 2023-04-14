@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Exam;
 use App\Entity\Teacher;
+use App\Util\Validator;
 use Slimfony\DependencyInjection\Container;
 use Slimfony\HttpFoundation\RedirectResponse;
 use Slimfony\HttpFoundation\Response;
@@ -91,7 +92,8 @@ class ExamController extends AbstractAdminController
     private function updateExamFromRequest(): Exam
     {
         $data = $this->getRequest()->request->all();
-        if (!isset($data['id'], $data['name'], $data['teacher_id'], $data['exam_date'], $data['credits'])) {
+
+        if (!Validator::validateRequired($data, ['id', 'name', 'teacher_id', 'exam_date', 'credits'])) {
             throw new BadRequestException('Not all fields were filled in');
         }
 
