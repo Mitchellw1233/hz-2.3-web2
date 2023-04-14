@@ -66,6 +66,12 @@ $anubis = [
     \App\Controller\Admin\ExamController::class => [
         // Container
     ],
+    \App\Controller\Admin\TeacherController::class => [
+        // Container
+    ],
+    \App\Controller\Admin\StudentController::class => [
+        // Container
+    ],
 ];
 
 /**

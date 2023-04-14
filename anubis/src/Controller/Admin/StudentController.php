@@ -2,8 +2,7 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Exam;
-use App\Entity\Teacher;
+use App\Entity\Student;
 use Slimfony\DependencyInjection\Container;
 use Slimfony\HttpFoundation\RedirectResponse;
 use Slimfony\HttpFoundation\Response;
@@ -12,7 +11,7 @@ use Slimfony\HttpKernel\Exception\ForbiddenException;
 use Slimfony\ORM\EntityManager;
 use Slimfony\Routing\RouteResolver;
 
-class ExamController extends AbstractAdminController
+class StudentController extends AbstractAdminController
 {
     public function __construct(
         Container $container,
@@ -29,29 +28,28 @@ class ExamController extends AbstractAdminController
             throw new ForbiddenException();
         }
 
-        return $this->render('pages/admin/exam/list.php', [
-            'exams' => $this->entityManager->getQueryBuilder(Exam::class)->result(),
+        return $this->render('pages/admin/student/list.php', [
+            'students' => $this->entityManager->getQueryBuilder(Student::class)->result(),
         ]);
     }
 
     public function single(int $id): Response
     {
         if (strtoupper($this->getRequest()->getMethod()) === 'POST') {
-            $exam = $this->entityManager->persist($this->updateExamFromRequest());
+            $student = $this->entityManager->persist($this->updateStudentFromRequest());
             $this->entityManager->flush();
 
-            return $this->redirectToRoute('admin.exam.single', ['id' => $exam->getId()]);
+            return $this->redirectToRoute('admin.student.single', ['id' => $student->getId()]);
         }
 
-        return $this->render('pages/admin/exam/crud.php', [
-            'exam' => $this->entityManager->getQueryBuilder(Exam::class)
+        return $this->render('pages/admin/student/crud.php', [
+            'student' => $this->entityManager->getQueryBuilder(Student::class)
                 ->where('id = :id')
                 ->setParameters([
                     'id' => $id,
                 ])
                 ->limit(1)
                 ->result(),
-            'teachers' => $this->entityManager->getQueryBuilder(Teacher::class)->result(),
             'editable' => $this->getRequest()->getQuery()->get('edit') === 'true',
         ]);
     }
@@ -59,15 +57,14 @@ class ExamController extends AbstractAdminController
     public function create(): Response
     {
         if (strtoupper($this->getRequest()->getMethod()) === 'POST') {
-            $exam = $this->entityManager->persist($this->newExamFromRequest());
+            $student = $this->entityManager->persist($this->newStudentFromRequest());
             $this->entityManager->flush();
 
-            return $this->redirectToRoute('admin.exam.single', ['id' => $exam->getId()]);
+            return $this->redirectToRoute('admin.student.single', ['id' => $student->getId()]);
         }
 
-        return $this->render('pages/admin/exam/crud.php', [
-            'exam' => null,
-            'teachers' => $this->entityManager->getQueryBuilder(Teacher::class)->result(),
+        return $this->render('pages/admin/student/crud.php', [
+            'student' => null,
             'editable' => true,
         ]);
     }
@@ -75,7 +72,7 @@ class ExamController extends AbstractAdminController
     public function delete(int $id): RedirectResponse
     {
         $this->entityManager->remove(
-            $this->entityManager->getQueryBuilder(Exam::class)
+            $this->entityManager->getQueryBuilder(Student::class)
                 ->where('id = :id')
                 ->setParameters([
                     'id' => $id,
@@ -85,26 +82,18 @@ class ExamController extends AbstractAdminController
         );
         $this->entityManager->flush();
 
-        return $this->redirectToRoute('admin.exam.list');
+        return $this->redirectToRoute('admin.student.list');
     }
 
-    private function updateExamFromRequest(): Exam
+    private function updateStudentFromRequest(): Student
     {
         $data = $this->getRequest()->request->all();
-        if (!isset($data['id'], $data['name'], $data['teacher_id'], $data['exam_date'], $data['credits'])) {
+        if (!isset($data['firstname'], $data['lastname'], $data['email'], $data['birth_date'])) {
             throw new BadRequestException('Not all fields were filled in');
         }
 
-        $teacher = $this->entityManager->getQueryBuilder(Teacher::class)
-            ->where('id = :id')
-            ->setParameters([
-                'id' => $data['teacher_id'],
-            ])
-            ->limit(1)
-            ->result();
-
-        /** @var Exam $exam */
-        $exam = $this->entityManager->getQueryBuilder(Exam::class)
+        /** @var Student $student */
+        $student = $this->entityManager->getQueryBuilder(Student::class)
             ->where('id = :id')
             ->setParameters([
                 'id' => $data['id'],
@@ -112,33 +101,26 @@ class ExamController extends AbstractAdminController
             ->limit(1)
             ->result();
         try {
-            $exam->setName($data['name']);
-            $exam->setTeacher($teacher);
-            $exam->setExamDate(new \DateTime($data['exam_date']));
-            $exam->setCredits($data['credits']);
+            $student->setFirstName($data['firstname']);
+            $student->setLastName($data['lastname']);
+            $student->setEmail($data['email']);
+            $student->setBirthDate(new \DateTime($data['birth_date']));
         } catch (\Exception) {
             throw new BadRequestException('Something went wrong with the field config');
         }
 
-        return $exam;
+        return $student;
     }
 
-    private function newExamFromRequest(): Exam
+    private function newStudentFromRequest(): Student
     {
         $data = $this->getRequest()->request->all();
-        if (!isset($data['name'], $data['teacher_id'], $data['exam_date'], $data['credits'])) {
+        if (!isset($data['firstname'], $data['lastname'], $data['email'], $data['birth_date'])) {
             throw new BadRequestException('Not all fields were filled in');
         }
 
-        $teacher = $this->entityManager->getQueryBuilder(Teacher::class)
-            ->where('id = :id')
-            ->setParameters([
-                'id' => $data['teacher_id'],
-            ])
-            ->limit(1)
-            ->result();
         try {
-            return new Exam($data['name'], $teacher, new \DateTime($data['exam_date']), $data['credits']);
+            return new Student($data['firstname'], $data['lastname'], $data['email'], new \DateTime($data['birth_date']));
         } catch (\Exception) {
             // TODO: This could be tricky, as it could also catch other errors, but we lack validation
             //  so this is the way now.

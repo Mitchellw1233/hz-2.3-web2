@@ -29,6 +29,66 @@
       "methods": [
         "GET"
       ]
+    },
+    "admin.teacher.list": {
+      "path": "/admin/teachers",
+      "controller": "App\\Controller\\Admin\\TeacherController::list",
+      "methods": [
+        "GET"
+      ]
+    },
+    "admin.teacher.create": {
+      "path": "/admin/teachers/create",
+      "controller": "App\\Controller\\Admin\\TeacherController::create",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    "admin.teacher.single": {
+      "path": "/admin/teachers/{id}",
+      "controller": "App\\Controller\\Admin\\TeacherController::single",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    "admin.teacher.delete": {
+      "path": "/admin/teachers/{id}/delete",
+      "controller": "App\\Controller\\Admin\\TeacherController::delete",
+      "methods": [
+        "GET"
+      ]
+    },
+    "admin.student.list": {
+      "path": "/admin/students",
+      "controller": "App\\Controller\\Admin\\StudentController::list",
+      "methods": [
+        "GET"
+      ]
+    },
+    "admin.student.create": {
+      "path": "/admin/students/create",
+      "controller": "App\\Controller\\Admin\\StudentController::create",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    "admin.student.single": {
+      "path": "/admin/students/{id}",
+      "controller": "App\\Controller\\Admin\\StudentController::single",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    "admin.student.delete": {
+      "path": "/admin/students/{id}/delete",
+      "controller": "App\\Controller\\Admin\\StudentController::delete",
+      "methods": [
+        "GET"
+      ]
     }
   },
   "db": {

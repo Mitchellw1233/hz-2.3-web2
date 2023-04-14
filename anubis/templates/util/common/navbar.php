@@ -44,6 +44,7 @@ $_teacherNav = [
 $_adminNav = [
     new NavItem('/', 'Dashboard', $request->getUri()->getPath() === '/'),
     new NavItem('/admin/exams', 'Tentamens', $request->getUri()->getPath() === '/admin/exams'),
+    new NavItem('/admin/teachers', 'Leraren', $request->getUri()->getPath() === '/admin/teachers'),
     new NavItem('/admin/students', 'Studenten', $request->getUri()->getPath() === '/admin/students'),
 ];
 

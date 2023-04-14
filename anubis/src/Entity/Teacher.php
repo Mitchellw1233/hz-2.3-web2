@@ -41,6 +41,9 @@ class Teacher extends BaseEntity implements UserInterface, IdentifierInterface
         $this->lastName = $lastName;
         $this->email = $email;
         $this->birthDate = $birthDate;
+
+        // TODO: REMOVE
+        $this->password = "testpassword";
     }
 
     /**

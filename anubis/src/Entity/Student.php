@@ -36,13 +36,15 @@ class Student extends BaseEntity implements UserInterface, IdentifierInterface
      * @param string $password
      * @param \DateTime $birthDate
      */
-    public function __construct(string $firstName, string $lastName, string $email, string $password, \DateTime $birthDate)
+    public function __construct(string $firstName, string $lastName, string $email, \DateTime $birthDate)
     {
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->email = $email;
-        $this->password = $password;
         $this->birthDate = $birthDate;
+
+        // TODO: REMOVE
+        $this->password = "testpassword";
     }
 
     /**
