@@ -65,7 +65,7 @@ class EntityTransformer
             $shortType = $shortType[0];
 
             $value = $dbResult[$column->name];
-            if (array_key_exists($shortType, DBTypeMapper::types())) {
+            if (array_key_exists($shortType, DBTypeMapper::types()) && $value !== null) {
                 $value = DBTypeMapper::types()[$shortType]['from']($value);
             }
 
@@ -108,9 +108,7 @@ class EntityTransformer
             preg_match('#^[^\(]*#', $column->type, $shortType);
             $shortType = $shortType[0];
 
-            // DIT WAS MIJN FIX
-//            if (array_key_exists($shortType, DBTypeMapper::types()) && $value !== null) {
-            if (array_key_exists($shortType, DBTypeMapper::types())) {
+            if (array_key_exists($shortType, DBTypeMapper::types()) && $value !== null) {
                 $value = DBTypeMapper::types()[$shortType]['to']($value);
             }
 

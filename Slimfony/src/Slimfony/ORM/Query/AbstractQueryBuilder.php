@@ -41,7 +41,7 @@ abstract class AbstractQueryBuilder
     public function setParameters(array $parameters): static
     {
         foreach ($parameters as $name => $value) {
-            if (!is_scalar($value)) {
+            if ($value !== null && !is_scalar($value)) {
                 throw new \InvalidArgumentException(sprintf('Parameter `%s` is non-scalar', $name));
             }
         }
