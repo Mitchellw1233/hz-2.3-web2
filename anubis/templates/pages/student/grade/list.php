@@ -8,7 +8,6 @@ $title = 'Grades';
 $metaTitle = 'Grades - Student';
 $metaDescription = $title;
 ?>
-
 <?php $start_block('body'); ?>
 
 <div class="container p-4">
@@ -16,15 +15,13 @@ $metaDescription = $title;
         <div class="col-6">
             <h1><?php echo $title ?></h1>
         </div>
-        <div class="col-6 d-flex justify-content-end align-items-end">
-            <a href="/" class="btn btn-primary fw-bold px-3">+</a>
-        </div>
     </div>
     <table class="table" data-table>
         <thead>
         <tr>
             <th scope="col">exam</th>
             <th scope="col">grade</th>
+            <th scope="col">graded_at</th>
             <th scope="col">exam date</th>
         </tr>
         </thead>
@@ -35,10 +32,12 @@ $metaDescription = $title;
                         <td>%s</td>
                         <td>%s</td>
                         <td>%s</td>
+                        <td>%s</td>
                     </tr>
                 ',
                 $grade->getExam()->getName(),
                 $grade->getGrade(),
+                $grade->getGradedAt(),
                 $grade->getExam()->getExamDate()->format('Y-m-d H:i'),
             );
         } ?>

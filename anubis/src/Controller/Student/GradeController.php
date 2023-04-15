@@ -2,14 +2,15 @@
 
 namespace App\Controller\Student;
 
-use App\Controller\AbstractBaseController;
 use App\Entity\ExamRegistration;
 use Slimfony\DependencyInjection\Container;
+use Slimfony\HttpFoundation\Response;
 use Slimfony\HttpKernel\Exception\ForbiddenException;
 use Slimfony\ORM\EntityManager;
+use Slimfony\ORM\Query\OrderByEnum;
 use Slimfony\Routing\RouteResolver;
 
-class GradeController extends AbstractBaseController
+class GradeController extends AbstractStudentController
 {
     public function __construct(
         Container $container,
@@ -20,18 +21,20 @@ class GradeController extends AbstractBaseController
         parent::__construct($container, $routeResolver);
     }
 
-    public function list()
+    public function list(): Response
     {
         if (!$this->verify()) {
             throw new ForbiddenException();
         }
 
-        $studentId = $this->getUser()->getId();
+        // TODO: REMOVE
+        $studentId = 5;
+//        $studentId = $this->getUser()->getId();
 
-        return $this->render('pages/student/grades/list.php', [
+        return $this->render('pages/student/grade/list.php', [
             'grades' => $this->entityManager->getQueryBuilder(ExamRegistration::class)
-                ->where('student_id = :student_id')
-                ->where('grade IS NOT NULL')
+                ->where('student_id = :student_id AND grade IS NOT NULL')
+                ->orderBy(OrderByEnum::DESC, 'graded_at')
                 ->setParameters([
                     'student_id' => $studentId,
                 ])

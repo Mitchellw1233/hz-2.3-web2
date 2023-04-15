@@ -9,6 +9,8 @@ $metaTitle = 'Registrations - Student';
 $metaDescription = $title;
 ?>
 
+<?php dump($all) ?>
+
 <?php $start_block('body'); ?>
 
 <div class="container p-4">
@@ -16,17 +18,13 @@ $metaDescription = $title;
         <div class="col-6">
             <h1><?php echo $title ?></h1>
         </div>
-        <div class="col-6 d-flex justify-content-end align-items-end">
-            <a href="/" class="btn btn-primary fw-bold px-3">+</a>
-        </div>
     </div>
     <table class="table" data-table>
         <thead>
         <tr>
             <th scope="col">exam</th>
-            <th scope="col">grade</th>
-            <th scope="col">graded_at</th>
             <th scope="col">exam date</th>
+            <th scope="col">Action</th>
         </tr>
         </thead>
         <tbody>
@@ -35,16 +33,37 @@ $metaDescription = $title;
                     <tr>
                         <td>%s</td>
                         <td>%s</td>
-                        <td>%s</td>
-                        <td>%s</td>
+                        <td><a href="%s" class="btn btn-sm btn-danger fw-bold px-3" data-confirm>Uitschrijven</a></td>
                     </tr>
                 ',
                 $registration->getExam()->getName(),
-                $registration->getGrade(),
-                $registration->getGradedAt(),
                 $registration->getExam()->getExamDate()->format('Y-m-d H:i'),
+                sprintf('/registrations/%s/deregister', $registration),
             );
-        } ?>
+        }
+
+        foreach ($exams as $exam) {
+            if ($student !== null) {
+                foreach ($registrations as $registration) {
+                    if ($registration->getExam()->getId() === $exam->getId()) {
+                        continue 2;
+                    }
+                }
+            }
+
+            echo sprintf('
+                    <tr>
+                        <td>%s</td>
+                        <td>%s</td>
+                        <td><a href="%s" class="btn btn-sm btn-danger fw-bold px-3" data-confirm>Inschrijven</a></td>
+                    </tr>
+                ',
+                $exam->getName(),
+                $exam->getExamDate()->format('Y-m-d H:i'),
+                sprintf('/registrations/%s/register', $exam),
+            );
+        }
+        ?>
         </tbody>
     </table>
 </div>
