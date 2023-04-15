@@ -2,13 +2,14 @@
 
 namespace App\Controller\Student;
 
+use App\Controller\AbstractBaseController;
 use App\Entity\ExamRegistration;
 use Slimfony\DependencyInjection\Container;
 use Slimfony\HttpKernel\Exception\ForbiddenException;
 use Slimfony\ORM\EntityManager;
 use Slimfony\Routing\RouteResolver;
 
-class GradeController extends AbstractStudentController
+class GradeController extends AbstractBaseController
 {
     public function __construct(
         Container $container,

@@ -2,13 +2,14 @@
 
 namespace App\Controller\Student;
 
+use App\Controller\AbstractBaseController;
 use App\Entity\ExamRegistration;
 use Slimfony\DependencyInjection\Container;
 use Slimfony\HttpKernel\Exception\ForbiddenException;
 use Slimfony\ORM\EntityManager;
 use Slimfony\Routing\RouteResolver;
 
-class RegistrationController extends AbstractStudentController
+class RegistrationController extends AbstractBaseController
 {
     public function __construct(
         Container $container,
@@ -30,7 +31,6 @@ class RegistrationController extends AbstractStudentController
         return $this->render('pages/student/registrations/list.php', [
             'grades' => $this->entityManager->getQueryBuilder(ExamRegistration::class)
                 ->where('student_id = :student_id')
-                ->where('grade IS NOT NULL')
                 ->setParameters([
                     'student_id' => $studentId,
                 ])
