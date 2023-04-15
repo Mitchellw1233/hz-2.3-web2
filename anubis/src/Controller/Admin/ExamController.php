@@ -4,14 +4,15 @@ namespace App\Controller\Admin;
 
 use App\Entity\Exam;
 use App\Entity\Teacher;
-use App\Util\Validator;
 use Slimfony\DependencyInjection\Container;
 use Slimfony\HttpFoundation\RedirectResponse;
 use Slimfony\HttpFoundation\Response;
-use Slimfony\HttpKernel\Exception\BadRequestException;
 use Slimfony\HttpKernel\Exception\ForbiddenException;
 use Slimfony\ORM\EntityManager;
 use Slimfony\Routing\RouteResolver;
+use Slimfony\Validation\Constraint;
+use Slimfony\Validation\Exception\ValidationException;
+use Slimfony\Validation\Validator;
 
 class ExamController extends AbstractAdminController
 {
@@ -22,6 +23,16 @@ class ExamController extends AbstractAdminController
     )
     {
         parent::__construct($container, $routeResolver);
+    }
+
+    public static function validationSchema(): array
+    {
+        return [
+            'name' => new Constraint('string'),
+            'teacher_id' => new Constraint('integer', empty: true),
+            'exam_date' => new Constraint('string'),
+            'credits' => new Constraint('integer'),
+        ];
     }
 
     public function list(): Response
@@ -38,7 +49,11 @@ class ExamController extends AbstractAdminController
     public function single(int $id): Response
     {
         if (strtoupper($this->getRequest()->getMethod()) === 'POST') {
-            $exam = $this->entityManager->persist($this->updateExamFromRequest());
+            try {
+                $exam = $this->entityManager->persist($this->updateExamFromRequest($id));
+            } catch (ValidationException $e) {
+                return $this->redirectToRoute('admin.exam.single', ['id' => $id], ['edit' => 'true', 'errors' => $e->getMessage()]);
+            }
             $this->entityManager->flush();
 
             return $this->redirectToRoute('admin.exam.single', ['id' => $exam->getId()]);
@@ -54,13 +69,18 @@ class ExamController extends AbstractAdminController
                 ->result(),
             'teachers' => $this->entityManager->getQueryBuilder(Teacher::class)->result(),
             'editable' => $this->getRequest()->getQuery()->get('edit') === 'true',
+            'errors' => $this->getRequest()->query->get('errors'),
         ]);
     }
 
     public function create(): Response
     {
         if (strtoupper($this->getRequest()->getMethod()) === 'POST') {
-            $exam = $this->entityManager->persist($this->newExamFromRequest());
+            try {
+                $exam = $this->entityManager->persist($this->newExamFromRequest());
+            } catch (ValidationException $e) {
+                return $this->redirectToRoute('admin.exam.create', [], ['errors' => $e->getMessage()]);
+            }
             $this->entityManager->flush();
 
             return $this->redirectToRoute('admin.exam.single', ['id' => $exam->getId()]);
@@ -70,6 +90,7 @@ class ExamController extends AbstractAdminController
             'exam' => null,
             'teachers' => $this->entityManager->getQueryBuilder(Teacher::class)->result(),
             'editable' => true,
+            'errors' => $this->getRequest()->query->get('errors'),
         ]);
     }
 
@@ -89,13 +110,14 @@ class ExamController extends AbstractAdminController
         return $this->redirectToRoute('admin.exam.list');
     }
 
-    private function updateExamFromRequest(): Exam
+    /**
+     * @param int $id
+     * @return Exam
+     * @throws ValidationException
+     */
+    private function updateExamFromRequest(int $id): Exam
     {
-        $data = $this->getRequest()->request->all();
-
-        if (!Validator::validateRequired($data, ['id', 'name', 'teacher_id', 'exam_date', 'credits'])) {
-            throw new BadRequestException('Not all fields were filled in');
-        }
+        $data = Validator::validate($this->getRequest()->request->all(), self::validationSchema());
 
         $teacher = $this->entityManager->getQueryBuilder(Teacher::class)
             ->where('id = :id')
@@ -109,28 +131,27 @@ class ExamController extends AbstractAdminController
         $exam = $this->entityManager->getQueryBuilder(Exam::class)
             ->where('id = :id')
             ->setParameters([
-                'id' => $data['id'],
+                'id' => $id,
             ])
             ->limit(1)
             ->result();
-        try {
-            $exam->setName($data['name']);
-            $exam->setTeacher($teacher);
-            $exam->setExamDate(new \DateTime($data['exam_date']));
-            $exam->setCredits($data['credits']);
-        } catch (\Exception) {
-            throw new BadRequestException('Something went wrong with the field config');
-        }
+
+        $exam->setName($data['name']);
+        $exam->setTeacher($teacher);
+        $exam->setExamDate(new \DateTime($data['exam_date']));
+        $exam->setCredits($data['credits']);
 
         return $exam;
     }
 
+    /**
+     * @return Exam
+     *
+     * @throws ValidationException
+     */
     private function newExamFromRequest(): Exam
     {
-        $data = $this->getRequest()->request->all();
-        if (!isset($data['name'], $data['teacher_id'], $data['exam_date'], $data['credits'])) {
-            throw new BadRequestException('Not all fields were filled in');
-        }
+        $data = Validator::validate($this->getRequest()->request->all(), self::validationSchema());
 
         $teacher = $this->entityManager->getQueryBuilder(Teacher::class)
             ->where('id = :id')
@@ -139,13 +160,7 @@ class ExamController extends AbstractAdminController
             ])
             ->limit(1)
             ->result();
-        try {
-            return new Exam($data['name'], $teacher, new \DateTime($data['exam_date']), $data['credits']);
-        } catch (\Exception) {
-            // TODO: This could be tricky, as it could also catch other errors, but we lack validation
-            //  so this is the way now.
-            // TODO: add log
-            throw new BadRequestException('Something went wrong with the field config');
-        }
+
+        return new Exam($data['name'], $teacher, new \DateTime($data['exam_date']), $data['credits']);
     }
 }

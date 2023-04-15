@@ -2,16 +2,16 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Exam;
 use App\Entity\Teacher;
-use App\Util\Validator;
 use Slimfony\DependencyInjection\Container;
 use Slimfony\HttpFoundation\RedirectResponse;
 use Slimfony\HttpFoundation\Response;
-use Slimfony\HttpKernel\Exception\BadRequestException;
 use Slimfony\HttpKernel\Exception\ForbiddenException;
 use Slimfony\ORM\EntityManager;
 use Slimfony\Routing\RouteResolver;
+use Slimfony\Validation\Constraint;
+use Slimfony\Validation\Exception\ValidationException;
+use Slimfony\Validation\Validator;
 
 class TeacherController extends AbstractAdminController
 {
@@ -22,6 +22,16 @@ class TeacherController extends AbstractAdminController
     )
     {
         parent::__construct($container, $routeResolver);
+    }
+
+    public static function validationSchema(): array
+    {
+        return [
+            'firstname' => new Constraint('string'),
+            'lastname' => new Constraint('string'),
+            'email' => new Constraint('string'),
+            'birth_date' => new Constraint('string'),
+        ];
     }
 
     public function list(): Response
@@ -38,7 +48,12 @@ class TeacherController extends AbstractAdminController
     public function single(int $id): Response
     {
         if (strtoupper($this->getRequest()->getMethod()) === 'POST') {
-            $teacher = $this->entityManager->persist($this->updateTeacherFromRequest());
+            try {
+                $teacher = $this->entityManager->persist($this->updateTeacherFromRequest($id));
+            } catch (ValidationException $e) {
+                return $this->redirectToRoute('admin.teacher.single', ['id' => $id],
+                    ['errors' => $e->getMessage(), 'edit' => 'true']);
+            }
             $this->entityManager->flush();
 
             return $this->redirectToRoute('admin.teacher.single', ['id' => $teacher->getId()]);
@@ -53,13 +68,18 @@ class TeacherController extends AbstractAdminController
                 ->limit(1)
                 ->result(),
             'editable' => $this->getRequest()->getQuery()->get('edit') === 'true',
+            'errors' => $this->getRequest()->getQuery()->get('errors'),
         ]);
     }
 
     public function create(): Response
     {
         if (strtoupper($this->getRequest()->getMethod()) === 'POST') {
-            $teacher = $this->entityManager->persist($this->newTeacherFromRequest());
+            try {
+                $teacher = $this->entityManager->persist($this->newTeacherFromRequest());
+            } catch (ValidationException $e) {
+                return $this->redirectToRoute('admin.teacher.create', [], ['errors' => $e->getMessage()]);
+            }
             $this->entityManager->flush();
 
             return $this->redirectToRoute('admin.teacher.single', ['id' => $teacher->getId()]);
@@ -68,6 +88,7 @@ class TeacherController extends AbstractAdminController
         return $this->render('pages/admin/teacher/crud.php', [
             'teacher' => null,
             'editable' => true,
+            'errors' => $this->getRequest()->getQuery()->get('errors'),
         ]);
     }
 
@@ -87,47 +108,42 @@ class TeacherController extends AbstractAdminController
         return $this->redirectToRoute('admin.teacher.list');
     }
 
-    private function updateTeacherFromRequest(): Teacher
+    /**
+     * @return Teacher
+     *
+     * @throws ValidationException
+     */
+    private function updateTeacherFromRequest(int $id): Teacher
     {
-        $data = $this->getRequest()->request->all();
-        if (!isset($data['firstname'], $data['lastname'], $data['email'], $data['birth_date'])) {
-            throw new BadRequestException('Not all fields were filled in');
-        }
+        $data = Validator::validate($this->getRequest()->request->all(), self::validationSchema());
 
         /** @var Teacher $teacher */
         $teacher = $this->entityManager->getQueryBuilder(Teacher::class)
             ->where('id = :id')
             ->setParameters([
-                'id' => $data['id'],
+                'id' => $id,
             ])
             ->limit(1)
             ->result();
-        try {
-            $teacher->setFirstName($data['firstname']);
-            $teacher->setLastName($data['lastname']);
-            $teacher->setEmail($data['email']);
-            $teacher->setBirthDate(new \DateTime($data['birth_date']));
-        } catch (\Exception) {
-            throw new BadRequestException('Something went wrong with the field config');
-        }
+
+        $teacher->setFirstName($data['firstname']);
+        $teacher->setLastName($data['lastname']);
+        $teacher->setEmail($data['email']);
+        $teacher->setBirthDate(new \DateTime($data['birth_date']));
 
         return $teacher;
     }
 
+    /**
+     * @return Teacher
+     *
+     * @throws ValidationException
+     */
     private function newTeacherFromRequest(): Teacher
     {
-        $data = $this->getRequest()->request->all();
-        if (!Validator::validateRequired($data, ['firstname', 'lastname', 'email', 'birth_date'])) {
-            throw new BadRequestException('Not all fields were filled in');
-        }
+        $data = Validator::validate($this->getRequest()->request->all(), self::validationSchema());
 
-        try {
-            return new Teacher($data['firstname'], $data['lastname'], $data['email'], "defaultpassword", new \DateTime($data['birth_date']));
-        } catch (\Exception) {
-            // TODO: This could be tricky, as it could also catch other errors, but we lack validation
-            //  so this is the way now.
-            // TODO: add log
-            throw new BadRequestException('Something went wrong with the field config');
-        }
+        return new Teacher($data['firstname'], $data['lastname'], $data['email'],
+            'defaultpassword', new \DateTime($data['birth_date']));
     }
 }

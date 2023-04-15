@@ -6,6 +6,7 @@ include dirname(__DIR__, 3) .'/util/common/ide_helper.php';
  * @var ?\App\Entity\ExamRegistration[] $registrations
  * @var \App\Entity\Exam[] $exams
  * @var ?bool $editable
+ * @var ?array<int, string> $errors
  */
 $title = 'Student - ' . ($student?->getName() ?? 'create');
 $metaTitle = 'Student - ' . ($student?->getName() ?? 'create') . ' - Admin';
@@ -35,6 +36,13 @@ $editable ??= false;
     <div class="row justify-content-start">
         <div class="col-12 col-md-8 col-xl-6">
             <form method="post">
+                <?php if (!empty($errors)) {
+                    echo sprintf('
+                        <div class="mb-3 text-danger">
+                            <span>%s</span>
+                        </div>
+                    ', $errors);
+                } ?>
                 <div class="mb-3">
                     <label class="form-label fw-semibold">ID</label>
                     <?php echo sprintf('<input class="form-control" name="id" type="text" disabled value="%s">',
@@ -46,49 +54,41 @@ $editable ??= false;
                     <?php echo sprintf('<input class="form-control" name="firstname" type="text" %s value="%s">',
                         $editable ? '' : 'disabled',
                         $student?->getFirstName() ?? ''
-                    );
-                    ?>
+                    ); ?>
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Lastname</label>
                     <?php echo sprintf('<input class="form-control" name="lastname" type="text" %s value="%s">',
                         $editable ? '' : 'disabled',
                         $student?->getLastName() ?? ''
-                    );
-                    ?>
+                    ); ?>
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Email</label>
                     <?php echo sprintf('<input class="form-control" name="email" type="text" %s value="%s">',
                         $editable ? '' : 'disabled',
                         $student?->getLastName() ?? ''
-                    );
-                    ?>
+                    ); ?>
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Birth date</label>
-                    <?php echo sprintf('<input class="form-control" name="birth_date" type="datetime-local" %s value="%s">',
+                    <?php echo sprintf('<input class="form-control" name="birth_date" type="date" %s value="%s">',
                         $editable ? '' : 'disabled',
-                        $student?->getBirthDate()->format('Y-m-d H:i') ?? ''
+                        $student?->getBirthDate()->format('Y-m-d') ?? ''
                     ); ?>
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Exams</label>
                     <select class="form-select" name="exam_ids[]" <?php echo $editable ? '' : 'disabled' ?> multiple>
+                        <option value="-1">None</option>
                         <?php
                             if ($student !== null) {
-                                if ($registrations === []) {
-                                    echo '<option value selected disabled></option>';
-                                }
-
                                 foreach ($registrations as $registration) {
                                     $exam = $registration->getExam();
                                     echo sprintf('<option value="%s" selected>%s</option>',
                                         $exam->getId(), $exam->getName()
                                     );
                                 }
-                            } else {
-                                echo '<option value selected disabled></option>';
                             }
 
                             foreach ($exams as $exam) {

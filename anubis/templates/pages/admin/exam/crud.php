@@ -5,6 +5,7 @@ include dirname(__DIR__, 3) .'/util/common/ide_helper.php';
  * @var ?\App\Entity\Exam $exam
  * @var ?bool $editable
  * @var \App\Entity\Teacher[] $teachers
+ * @var ?array<int, string> $errors
  */
 $title = 'Exam - ' . ($exam?->getName() ?? 'create');
 $metaTitle = 'Exam - ' . ($exam?->getName() ?? 'create') . ' - Admin';
@@ -34,6 +35,13 @@ $editable ??= false;
     <div class="row justify-content-start">
         <div class="col-12 col-md-8 col-xl-6">
             <form method="post">
+                <?php if (!empty($errors)) {
+                    echo sprintf('
+                        <div class="mb-3 text-danger">
+                            <span>%s</span>
+                        </div>
+                    ', $errors);
+                } ?>
                 <div class="mb-3">
                     <label class="form-label fw-semibold">ID</label>
                     <?php echo sprintf('<input class="form-control" name="id" type="text" disabled value="%s">',
