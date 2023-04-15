@@ -89,6 +89,34 @@
       "methods": [
         "GET"
       ]
+    },
+    "student.grade.list": {
+      "path": "/grades",
+      "controller": "App\\Controller\\Student\\GradeController::list",
+      "methods": [
+        "GET"
+      ]
+    },
+    "student.registration.list": {
+      "path": "/registrations",
+      "controller": "App\\Controller\\Student\\RegistrationController::list",
+      "methods": [
+        "GET"
+      ]
+    },
+    "student.registration.register": {
+      "path": "/registrations/{exam}/register",
+      "controller": "App\\Controller\\Student\\RegistrationController::register",
+      "methods": [
+        "GET"
+      ]
+    },
+    "student.registration.deregister": {
+      "path": "/registrations/{registration}/delete",
+      "controller": "App\\Controller\\Student\\RegistrationController::delete",
+      "methods": [
+        "GET"
+      ]
     }
   },
   "db": {
