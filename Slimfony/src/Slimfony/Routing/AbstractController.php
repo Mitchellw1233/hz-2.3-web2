@@ -51,10 +51,12 @@ abstract class AbstractController
         }
         $route->fillParameters($parameters);
 
+        $queryStr = empty($query) ? '' : '?' . http_build_query($query);
+
         return new RedirectResponse(
             $this->getRequest()->getUri()->getBase()
             . $route->buildPath()
-            . http_build_query($query)
+            . $queryStr
         );
     }
 
