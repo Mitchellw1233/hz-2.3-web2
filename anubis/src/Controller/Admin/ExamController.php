@@ -189,7 +189,7 @@ class ExamController extends AbstractAdminController
                 ->limit(1)
                 ->result();
             $registration->setGrade($grade);
-            $registration->setGradedAt(new \DateTime());
+            $registration->setGradedAt($grade === null ? null : new \DateTime());
 
             $registrations[] = $this->entityManager->persist($registration);
         }
