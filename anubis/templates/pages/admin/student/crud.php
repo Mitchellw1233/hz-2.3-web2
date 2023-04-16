@@ -67,7 +67,7 @@ $editable ??= false;
                     <label class="form-label fw-semibold">Email</label>
                     <?php echo sprintf('<input class="form-control" name="email" type="text" %s value="%s">',
                         $editable ? '' : 'disabled',
-                        $student?->getLastName() ?? ''
+                        $student?->getEmail() ?? ''
                     ); ?>
                 </div>
                 <div class="mb-3">

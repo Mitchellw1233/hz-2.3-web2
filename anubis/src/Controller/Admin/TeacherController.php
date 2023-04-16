@@ -139,7 +139,12 @@ class TeacherController extends AbstractAdminController
     {
         $data = Validator::validate($this->getRequest()->request->all(), self::validationSchema());
 
-        return new Teacher($data['firstname'], $data['lastname'], $data['email'],
-            'defaultpassword', new \DateTime($data['birth_date']));
+        return new Teacher(
+            $data['firstname'],
+            $data['lastname'],
+            $data['email'],
+            'defaultpassword',
+            new \DateTime($data['birth_date'])
+        );
     }
 }
