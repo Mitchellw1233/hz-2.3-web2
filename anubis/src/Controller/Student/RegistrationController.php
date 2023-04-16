@@ -24,9 +24,7 @@ class RegistrationController extends AbstractStudentController
 
     public function list(): Response
     {
-        // TODO: REMOVE
-        $studentId = 5;
-//        $studentId = $this->getUser()->getId();
+        $studentId = $this->getUser()->getId();
 
         return $this->render('pages/student/registration/list.php', [
             'registrations' => $this->entityManager->getQueryBuilder(ExamRegistration::class)
@@ -56,19 +54,8 @@ class RegistrationController extends AbstractStudentController
 
     public function register(int $id): Response
     {
-        // TODO: REMOVE
-        $studentId = 5;
-//        $studentId = $this->getUser()->getId();
-
-        // TODO: REMOVE
-        $student = $this->entityManager->getQueryBuilder(Student::class)
-            ->where('id = :id')
-            ->setParameters([
-                'id' => $studentId,
-            ])
-            ->limit(1)
-            ->result();
-//        $student = $this->getUser();
+        /** @var Student $student */
+        $student = $this->getUser();
 
         $exam = $this->entityManager->getQueryBuilder(Exam::class)
             ->where('id = :id')

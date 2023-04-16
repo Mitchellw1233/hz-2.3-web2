@@ -23,9 +23,7 @@ class GradeController extends AbstractStudentController
 
     public function list(): Response
     {
-        // TODO: REMOVE
-        $studentId = 5;
-//        $studentId = $this->getUser()->getId();
+        $studentId = $this->getUser()->getId();
 
         return $this->render('pages/student/grade/list.php', [
             'grades' => $this->entityManager->getQueryBuilder(ExamRegistration::class)
