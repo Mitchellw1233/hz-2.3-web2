@@ -62,7 +62,7 @@ try {
             $rootUser = new Admin(
                   'root',
                 'root@anubis.com',
-                password_hash('root', PASSWORD_BCRYPT),
+                'root',
             );
             $em->persist($rootUser);
     }
