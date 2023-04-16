@@ -1,3 +1,20 @@
+# Slimfony
+### Starting
+```
+docker compose up -d
+docker compose exec anubis bash
+cd ../
+php sform generate
+php sform seed
+```
+
+### Fresh migrations
+```
+docker compose exec anubis bash
+cd ../
+php sform fresh
+```
+
 # Setup: Using Docker
 ### Start
 ```
