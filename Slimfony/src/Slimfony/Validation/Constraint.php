@@ -8,6 +8,7 @@ class Constraint
         public string $type,
         public bool $nullable = false,
         public bool $empty = false,
+        public bool $onEmptyReturn = false  // TODO: Temp
     ) {
     }
 }

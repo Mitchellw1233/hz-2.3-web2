@@ -37,6 +37,11 @@ class Validator
             return $errors;
         }
 
+        // TODO: temp
+        if ($constraint->empty && empty($data[$key] && $constraint->onEmptyReturn)) {
+            return $errors;
+        }
+
         // If not set and not nullable, error
         if (!$constraint->nullable && !isset($data[$key])) {
             $errors[] = sprintf('%s cannot be null', $identifier);

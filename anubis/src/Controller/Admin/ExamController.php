@@ -33,7 +33,7 @@ class ExamController extends AbstractAdminController
             'teacher_id' => new Constraint('integer', empty: true),
             'exam_date' => new Constraint('string'),
             'credits' => new Constraint('integer'),
-            'student_grades' => new Constraint('float', empty: true),  // TODO: string empty or other empty
+            'student_grades' => new Constraint('float', nullable: true, empty: true, onEmptyReturn: true)
         ];
     }
 
@@ -61,16 +61,8 @@ class ExamController extends AbstractAdminController
     public function single(int $id): Response
     {
         if (strtoupper($this->getRequest()->getMethod()) === 'POST') {
-            // TODO: empty string fix in validator
-            $rData = $this->getRequest()->request->all();
-            foreach ($rData['student_grades'] as $key => $grade) {
-                if ($grade === '') {
-                    unset($rData['student_grades'][$key]);
-                }
-            }
-
             try {
-                $data = Validator::validate($rData, self::validationSchema());
+                $data = Validator::validate($this->getRequest()->request->all(), self::validationSchema());
             } catch (ValidationException $e) {
                 return $this->redirectToRoute('admin.exam.single', ['id' => $id], ['edit' => 'true', 'errors' => $e->getMessage()]);
             }
@@ -185,9 +177,9 @@ class ExamController extends AbstractAdminController
     private function persistGradesFromRequest(int $id, array $data): array
     {
         $registrations = [];
-        foreach ($data['student_grades'] as $sId => $grade) {
+        foreach ($data['student_grades'] ?? [] as $sId => $grade) {
             if ($grade === '') {
-                continue;
+                $grade = null;
             }
 
             /** @var ExamRegistration $registration */
