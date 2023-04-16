@@ -3,11 +3,13 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Exam;
+use App\Entity\ExamRegistration;
 use App\Entity\Teacher;
 use Slimfony\DependencyInjection\Container;
 use Slimfony\HttpFoundation\RedirectResponse;
 use Slimfony\HttpFoundation\Response;
 use Slimfony\ORM\EntityManager;
+use Slimfony\ORM\Query\OrderByEnum;
 use Slimfony\Routing\RouteResolver;
 use Slimfony\Validation\Constraint;
 use Slimfony\Validation\Exception\ValidationException;
@@ -31,6 +33,7 @@ class ExamController extends AbstractAdminController
             'teacher_id' => new Constraint('integer', empty: true),
             'exam_date' => new Constraint('string'),
             'credits' => new Constraint('integer'),
+            'student_grades' => new Constraint('float', empty: true),  // TODO: string empty or other empty
         ];
     }
 
@@ -58,11 +61,21 @@ class ExamController extends AbstractAdminController
     public function single(int $id): Response
     {
         if (strtoupper($this->getRequest()->getMethod()) === 'POST') {
+            // TODO: empty string fix in validator
+            $rData = $this->getRequest()->request->all();
+            foreach ($rData['student_grades'] as $key => $grade) {
+                if ($grade === '') {
+                    unset($rData['student_grades'][$key]);
+                }
+            }
+
             try {
-                $exam = $this->entityManager->persist($this->updateExamFromRequest($id));
+                $data = Validator::validate($rData, self::validationSchema());
             } catch (ValidationException $e) {
                 return $this->redirectToRoute('admin.exam.single', ['id' => $id], ['edit' => 'true', 'errors' => $e->getMessage()]);
             }
+            $exam = $this->entityManager->persist($this->updateExamFromRequest($id, $data));
+            $this->persistGradesFromRequest($id, $data);
             $this->entityManager->flush();
 
             return $this->redirectToRoute('admin.exam.single', ['id' => $exam->getId()]);
@@ -76,6 +89,10 @@ class ExamController extends AbstractAdminController
                 ])
                 ->limit(1)
                 ->result(),
+            'registrations' => $this->entityManager->getQueryBuilder(ExamRegistration::class)
+                ->where('exam_id = :id')->setParameters(['id' => $id])
+                ->orderBy(OrderByEnum::ASC, 'student_id')
+                ->result(),
             'teachers' => $this->entityManager->getQueryBuilder(Teacher::class)->result(),
             'editable' => $this->getRequest()->getQuery()->get('edit') === 'true',
             'errors' => $this->getRequest()->query->get('errors'),
@@ -86,10 +103,11 @@ class ExamController extends AbstractAdminController
     {
         if (strtoupper($this->getRequest()->getMethod()) === 'POST') {
             try {
-                $exam = $this->entityManager->persist($this->newExamFromRequest());
+                $data = Validator::validate($this->getRequest()->request->all(), self::validationSchema());
             } catch (ValidationException $e) {
                 return $this->redirectToRoute('admin.exam.create', [], ['errors' => $e->getMessage()]);
             }
+            $exam = $this->entityManager->persist($this->newExamFromRequest($data));
             $this->entityManager->flush();
 
             return $this->redirectToRoute('admin.exam.single', ['id' => $exam->getId()]);
@@ -119,15 +137,8 @@ class ExamController extends AbstractAdminController
         return $this->redirectToRoute('admin.exam.list');
     }
 
-    /**
-     * @param int $id
-     * @return Exam
-     * @throws ValidationException
-     */
-    private function updateExamFromRequest(int $id): Exam
+    private function updateExamFromRequest(int $id, array $data): Exam
     {
-        $data = Validator::validate($this->getRequest()->request->all(), self::validationSchema());
-
         $teacher = $this->entityManager->getQueryBuilder(Teacher::class)
             ->where('id = :id')
             ->setParameters([
@@ -153,15 +164,8 @@ class ExamController extends AbstractAdminController
         return $exam;
     }
 
-    /**
-     * @return Exam
-     *
-     * @throws ValidationException
-     */
-    private function newExamFromRequest(): Exam
+    private function newExamFromRequest(array $data): Exam
     {
-        $data = Validator::validate($this->getRequest()->request->all(), self::validationSchema());
-
         $teacher = $this->entityManager->getQueryBuilder(Teacher::class)
             ->where('id = :id')
             ->setParameters([
@@ -171,5 +175,33 @@ class ExamController extends AbstractAdminController
             ->result();
 
         return new Exam($data['name'], $teacher, new \DateTime($data['exam_date']), $data['credits']);
+    }
+
+    /**
+     * @param array<string, float> $data
+     *
+     * @return ExamRegistration[]
+     */
+    private function persistGradesFromRequest(int $id, array $data): array
+    {
+        $registrations = [];
+        foreach ($data['student_grades'] as $sId => $grade) {
+            if ($grade === '') {
+                continue;
+            }
+
+            /** @var ExamRegistration $registration */
+            $registration = $this->entityManager->getQueryBuilder(ExamRegistration::class)
+                ->where('exam_id = :exam_id AND student_id = :student_id')
+                ->setParameters(['exam_id' => $id, 'student_id' => $sId])
+                ->limit(1)
+                ->result();
+            $registration->setGrade($grade);
+            $registration->setGradedAt(new \DateTime());
+
+            $registrations[] = $this->entityManager->persist($registration);
+        }
+
+        return $registrations;
     }
 }

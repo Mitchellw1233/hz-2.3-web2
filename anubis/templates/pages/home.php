@@ -4,7 +4,7 @@ include dirname(__DIR__) .'/util/common/ide_helper.php';
 /**
  *
  */
-$title = 'Dashboard';
+$title = 'Anubis dashboard';
 $metaTitle = $title;
 $metaDescription = $title;
 ?>
@@ -19,7 +19,9 @@ $metaDescription = $title;
     </div>
     <div class="row justify-content-start">
         <div class="col-12 col-md-8 col-xl-6">
-            asdsasaa
+            <p>Welkom bij Anubis, deze website is mede mogelijk gemaakt door Slimfony (het beste framework ooit).
+                Hierboven is uw navigatie te vinden.
+            </p>
         </div>
     </div>
 </div>

@@ -17,12 +17,12 @@ $metaDescription = $title;
         <div class="col-6">
             <h1><?php echo $title ?></h1>
         </div>
-        <?php if ($isTeacher) {
+        <?php if (!$isTeacher) {
             echo '
             <div class="col-6 d-flex justify-content-end align-items-end">
                 <a href="/admin/exams/create" class="btn btn-primary fw-bold px-3">+</a>
             </div>
-            ';} ?>
+            '; } ?>
     </div>
     <table class="table" data-table>
         <thead>

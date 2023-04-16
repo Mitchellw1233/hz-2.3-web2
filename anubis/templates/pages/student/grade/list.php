@@ -37,7 +37,7 @@ $metaDescription = $title;
                 ',
                 $grade->getExam()->getName(),
                 $grade->getGrade(),
-                $grade->getGradedAt(),
+                $grade->getGradedAt()->format('Y-m-d H:i:s'),
                 $grade->getExam()->getExamDate()->format('Y-m-d H:i'),
             );
         } ?>
