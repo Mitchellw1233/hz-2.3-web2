@@ -33,8 +33,7 @@ class RegistrationController extends AbstractStudentController
 //        $studentId = $this->getUser()->getId();
 
         return $this->render('pages/student/registration/list.php', [
-            'all' => $this->entityManager->getQueryBuilder(ExamRegistration::class)->result(),
-            'registrations' => $this->entityManager->getQueryBuilder(ExamRegistration::class)
+g            'registrations' => $this->entityManager->getQueryBuilder(ExamRegistration::class)
                 ->where('student_id = :id')
                 ->setParameters([
                     'id' => $studentId,
