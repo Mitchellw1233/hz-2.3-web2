@@ -2,7 +2,6 @@
 
 namespace Slimfony\Routing;
 
-use App\Entity\Interface\UserInterface;
 use Slimfony\HttpFoundation\RedirectResponse;
 use Slimfony\HttpFoundation\Request;
 use Slimfony\HttpFoundation\Response;
@@ -67,19 +66,5 @@ abstract class AbstractController
         }
 
         return $this->request;
-    }
-
-    public function setUser(UserInterface $user): void
-    {
-        $this->getRequest()->getSession()->set('_user', serialize($user));
-    }
-
-    public function getUser(): ?UserInterface
-    {
-        if (!$this->getRequest()->getSession()->has('_user')) {
-            return null;
-        }
-
-        return unserialize($this->getRequest()->getSession()->get('_user'), UserInterface::class);
     }
 }

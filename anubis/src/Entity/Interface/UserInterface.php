@@ -12,6 +12,13 @@ interface UserInterface
     public function getId(): int;
 
     /**
+     * Should be unique.
+     *
+     * @return string
+     */
+    public function getEmail(): string;
+
+    /**
      * Gets name/full name
      *
      * @return string

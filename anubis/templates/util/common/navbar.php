@@ -81,6 +81,16 @@ if ($user instanceof Student) {
                     }
                 ?>
             </ul>
+            <div class="ms-auto">
+                <?php
+                    if ($user !== null) {
+                        echo '<a href="/auth/profile" class="btn btn-secondary">Profiel</a>';
+                        echo '<a href="/auth/logout" class="btn btn-danger ms-2">Uitloggen</a>';
+                    } else {
+                        echo '<a href="/auth/login" class="btn btn-primary">Inloggen</a>';
+                    }
+                ?>
+            </div>
         </div>
     </div>
 </nav>

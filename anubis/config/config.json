@@ -1,5 +1,35 @@
 {
   "routes": {
+    "home": {
+      "path": "/",
+      "controller": "App\\Controller\\HomeController::home",
+      "methods": [
+        "GET"
+      ]
+    },
+    "auth.login": {
+      "path": "/auth/login",
+      "controller": "App\\Controller\\Auth\\AuthController::login",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    "auth.logout": {
+      "path": "/auth/logout",
+      "controller": "App\\Controller\\Auth\\AuthController::logout",
+      "methods": [
+        "GET"
+      ]
+    },
+    "auth.profile": {
+      "path": "/auth/profile",
+      "controller": "App\\Controller\\Auth\\AuthController::profile",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
     "admin.exam.list": {
       "path": "/admin/exams",
       "controller": "App\\Controller\\Admin\\ExamController::list",

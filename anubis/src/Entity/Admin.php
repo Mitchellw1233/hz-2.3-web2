@@ -20,7 +20,7 @@ class Admin extends BaseEntity implements UserInterface, IdentifierInterface
     private int $id;
     #[Column(name: 'name', type: 'varchar(255)')]
     private string $name;
-    #[Column(name: 'email', type: 'varchar(255)')]
+    #[Column(name: 'email', type: 'varchar(255)', unique: true)]
     private string $email;
     #[Column(name: 'password', type: 'varchar(255)')]
     private string $password;

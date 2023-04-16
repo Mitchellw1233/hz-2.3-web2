@@ -10,7 +10,8 @@ use Slimfony\HttpFoundation\Request;
 /**
  * @var array<string, array{
  *     args?: array<int, mixed|Reference>,
- *     methods?: array<int, array{method: string, args?: array<int, mixed|Reference>}>
+ *     methods?: array<int, array{method: string, args?: array<int, mixed|Reference>}>,
+ *     shared?: bool
  * }> $services
  */
 $services = include dirname(__DIR__) . '/config/services.php';

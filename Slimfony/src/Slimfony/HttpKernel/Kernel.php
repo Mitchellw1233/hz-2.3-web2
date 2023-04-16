@@ -6,6 +6,7 @@ use Slimfony\DependencyInjection\Container;
 use Slimfony\EventDispatcher\EventDispatcher;
 use Slimfony\HttpFoundation\Request;
 use Slimfony\HttpFoundation\Response;
+use Slimfony\HttpKernel\Event\PreViewEvent;
 use Slimfony\HttpKernel\Event\RequestEvent;
 use Slimfony\HttpKernel\Event\ViewEvent;
 use Slimfony\HttpKernel\Exception\HttpException;
@@ -46,6 +47,13 @@ abstract class Kernel implements KernelInterface
         $route = self::$request->getAttributes()->get('_route');
         if (!$route instanceof Route) {
             throw new NotFoundHttpException();
+        }
+
+        $preViewEvent = new PreViewEvent($this, self::$request);
+        $this->dispatcher->dispatch($preViewEvent);
+
+        if ($preViewEvent->hasResponse()) {
+            return $preViewEvent->getResponse();
         }
 
         $controller = $this->controllerResolver->getController($route);

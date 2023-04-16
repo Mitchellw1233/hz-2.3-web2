@@ -36,10 +36,6 @@ class TeacherController extends AbstractAdminController
 
     public function list(): Response
     {
-        if (!$this->verify()) {
-            throw new ForbiddenException();
-        }
-
         return $this->render('pages/admin/teacher/list.php', [
             'teachers' => $this->entityManager->getQueryBuilder(Teacher::class)->result(),
         ]);

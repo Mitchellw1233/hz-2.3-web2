@@ -22,7 +22,7 @@ class Student extends BaseEntity implements UserInterface, IdentifierInterface
     private string $firstName;
     #[Column(name: 'last_name', type: 'varchar(255)')]
     private string $lastName;
-    #[Column(name: 'email', type: 'varchar(255)')]
+    #[Column(name: 'email', type: 'varchar(255)', unique: true)]
     private string $email;
     #[Column(name: 'password', type: 'varchar(255)')]
     private string $password;

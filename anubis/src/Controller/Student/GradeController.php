@@ -23,10 +23,6 @@ class GradeController extends AbstractStudentController
 
     public function list(): Response
     {
-        if (!$this->verify()) {
-            throw new ForbiddenException();
-        }
-
         // TODO: REMOVE
         $studentId = 5;
 //        $studentId = $this->getUser()->getId();

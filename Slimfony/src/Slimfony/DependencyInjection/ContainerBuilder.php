@@ -9,17 +9,18 @@ class ContainerBuilder
     public function __construct()
     {
         $this->container = new Container();
-        $this->container->set(Container::class, fn () => $this->container);
+        $this->container->set(Container::class, fn () => $this->container, true);
     }
 
     /**
      * @param string $class as FQN
      * @param array<int, mixed|Reference> $args if filled, auto-wiring is disabled
      * @param array<int, array{method: string, args?: array<int, mixed|Reference>}> $methodCalls methods to call on class, before returning
+     * @param bool $shared
      *
      * @return void
      */
-    public function register(string $class, array $args = [], array $methodCalls = []): void
+    public function register(string $class, array $args = [], array $methodCalls = [], bool $shared = true): void
     {
         // Check if class exists
         if (!class_exists($class)) {
@@ -57,7 +58,7 @@ class ContainerBuilder
         // if args not empty: auto-wiring is false, so construct args are manually filled
         // if method does not exist, auto-wiring is true, but no wiring is necessary
         if (!empty($args) || !method_exists($class, '__construct')) {
-            $this->registerContainerFactory($class, $args, $methodCalls);
+            $this->registerContainerFactory($class, $args, $methodCalls, $shared);
             return;
         }
 
@@ -82,20 +83,21 @@ class ContainerBuilder
             $args[] = $this->container->get($paramClass);
         }
 
-        $this->registerContainerFactory($class, $args, $methodCalls);
+        $this->registerContainerFactory($class, $args, $methodCalls, $shared);
     }
 
     /**
      * @param $services array<string, array{
      *     args?: array<int, mixed|Reference>,
-     *     methods?: array<int, array{method: string, args?: array<int, mixed|Reference>}>
+     *     methods?: array<int, array{method: string, args?: array<int, mixed|Reference>}>,
+     *     shared?: bool
      * }>
      */
     public function registerAll(array $services): void
     {
         // TODO: Order by referenced, so we don't have to order ourselves
         foreach ($services as $class => $config) {
-            $this->register($class, $config['args'] ?? [], $config['methods'] ?? []);
+            $this->register($class, $config['args'] ?? [], $config['methods'] ?? [], $config['shared'] ?? true);
         }
     }
 
@@ -108,10 +110,11 @@ class ContainerBuilder
      * @param string $class as FQN
      * @param array<int, mixed|Reference> $args if filled, auto-wiring is disabled
      * @param array<int, array{method: string, args?: array<int, mixed|Reference>}> $methodCalls methods to call on class, before returning
+     * @param bool $shared
      *
      * @return void
      */
-    private function registerContainerFactory(string $class, array $args, array $methodCalls): void
+    private function registerContainerFactory(string $class, array $args, array $methodCalls, bool $shared = true): void
     {
         // TODO: Check if this does not generate error, else:
         //  InvalidArgumentException: new class not FQN or args not correct or methodCalls (method or mArgs) not correct
@@ -123,6 +126,6 @@ class ContainerBuilder
             }
 
             return $instance;
-        });
+        }, $shared);
     }
 }

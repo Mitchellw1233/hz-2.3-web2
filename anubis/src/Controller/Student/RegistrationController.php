@@ -24,16 +24,12 @@ class RegistrationController extends AbstractStudentController
 
     public function list(): Response
     {
-        if (!$this->verify()) {
-            throw new ForbiddenException();
-        }
-
         // TODO: REMOVE
         $studentId = 5;
 //        $studentId = $this->getUser()->getId();
 
         return $this->render('pages/student/registration/list.php', [
-g            'registrations' => $this->entityManager->getQueryBuilder(ExamRegistration::class)
+            'registrations' => $this->entityManager->getQueryBuilder(ExamRegistration::class)
                 ->where('student_id = :id')
                 ->setParameters([
                     'id' => $studentId,
@@ -60,10 +56,6 @@ g            'registrations' => $this->entityManager->getQueryBuilder(ExamRegist
 
     public function register(int $id): Response
     {
-        if (!$this->verify()) {
-            throw new ForbiddenException();
-        }
-
         // TODO: REMOVE
         $studentId = 5;
 //        $studentId = $this->getUser()->getId();

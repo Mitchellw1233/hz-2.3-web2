@@ -7,7 +7,6 @@ use App\Entity\Teacher;
 use Slimfony\DependencyInjection\Container;
 use Slimfony\HttpFoundation\RedirectResponse;
 use Slimfony\HttpFoundation\Response;
-use Slimfony\HttpKernel\Exception\ForbiddenException;
 use Slimfony\ORM\EntityManager;
 use Slimfony\Routing\RouteResolver;
 use Slimfony\Validation\Constraint;
@@ -37,10 +36,6 @@ class ExamController extends AbstractAdminController
 
     public function list(): Response
     {
-        if (!$this->verify()) {
-            throw new ForbiddenException();
-        }
-
         return $this->render('pages/admin/exam/list.php', [
             'exams' => $this->entityManager->getQueryBuilder(Exam::class)->result(),
         ]);
