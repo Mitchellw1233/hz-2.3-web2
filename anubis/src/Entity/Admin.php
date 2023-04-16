@@ -32,9 +32,9 @@ class Admin extends BaseEntity implements UserInterface, IdentifierInterface
      */
     public function __construct(string $name, string $email, string $password)
     {
-        $this->name = $name;
-        $this->email = $email;
-        $this->password = $password;
+        $this->setName($name);
+        $this->setEmail($email);
+        $this->setPassword($password);
     }
 
     /**

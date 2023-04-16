@@ -39,11 +39,11 @@ class ExamRegistration extends BaseEntity implements IdentifierInterface
     public function __construct(Exam $exam, Student $student, \DateTime $registrationDate,
                                 ?float $grade, ?\DateTime $gradedAt)
     {
-        $this->exam = $exam;
-        $this->student = $student;
-        $this->registrationDate = $registrationDate;
-        $this->grade = $grade;
-        $this->gradedAt = $gradedAt;
+        $this->setExam($exam);
+        $this->setStudent($student);
+        $this->setRegistrationDate($registrationDate);
+        $this->setGrade($grade);
+        $this->setGradedAt($gradedAt);
     }
 
     /**

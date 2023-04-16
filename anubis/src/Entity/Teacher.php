@@ -37,11 +37,11 @@ class Teacher extends BaseEntity implements UserInterface, IdentifierInterface
      */
     public function __construct(string $firstName, string $lastName, string $email, string $password, \DateTime $birthDate)
     {
-        $this->firstName = $firstName;
-        $this->lastName = $lastName;
-        $this->email = $email;
-        $this->password = $password;
-        $this->birthDate = $birthDate;
+        $this->setFirstName($firstName);
+        $this->setLastName($lastName);
+        $this->setEmail($email);
+        $this->setPassword($password);
+        $this->setBirthDate($birthDate);
     }
 
     /**
@@ -95,22 +95,6 @@ class Teacher extends BaseEntity implements UserInterface, IdentifierInterface
     public function setEmail(string $email): void
     {
         $this->email = $email;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPassword(): string
-    {
-        return $this->password;
-    }
-
-    /**
-     * @param string $password
-     */
-    public function setPassword(string $password): void
-    {
-        $this->password = $password;
     }
 
     /**

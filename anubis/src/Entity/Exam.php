@@ -34,10 +34,10 @@ class Exam extends BaseEntity implements IdentifierInterface
      */
     public function __construct(string $name, Teacher $teacher, \DateTime $examDate, int $credits)
     {
-        $this->name = $name;
-        $this->teacher = $teacher;
-        $this->examDate = $examDate;
-        $this->credits = $credits;
+        $this->setName($name);
+        $this->setTeacher($teacher);
+        $this->setExamDate($examDate);
+        $this->setCredits($credits);
     }
 
     /**
