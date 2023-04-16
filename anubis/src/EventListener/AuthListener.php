@@ -21,12 +21,13 @@ class AuthListener implements EventSubscriberInterface
     }
 
     public const PERMISSIONS = [
-        '' => [Admin::class],
+        'admin.' => [Admin::class],
         'admin.exam.list' => [Teacher::class],
         'admin.exam.single' => [Teacher::class],
         'student.' => [Student::class],
         'auth.logout' => [Student::class, Teacher::class, Admin::class],
         'auth.profile' => [Student::class, Teacher::class, Admin::class],
+        'home' => [Student::class, Teacher::class, Admin::class],
     ];
 
     public static function getSubscribedEvents(): array
