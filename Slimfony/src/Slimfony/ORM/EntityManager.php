@@ -20,7 +20,7 @@ class EntityManager
      * @psalm-param Entity<T> $entity
      * @psalm-return T
      */
-    public function persist(Entity $entity)
+    public function persist(Entity $entity, string $pk = 'id', string $pkProp = 'id')
     {
         $map = $this->mappingResolver->resolve($entity::class);
         $values = $this->entityTransformer->toDBResult($entity);
@@ -31,9 +31,21 @@ class EntityManager
                 ->values($values)
                 ->returning();
         } else {
+            // Get pk value
+            try {
+                $rp = new \ReflectionProperty($entity::class, $pkProp);
+            } catch (\ReflectionException $e) {
+                throw new \InvalidArgumentException($e->getMessage());
+            }
+            $rp->setAccessible(true);
+            $pkValue = $rp->getValue($entity);
+
             $qb->update($map->entity->name)
                 ->set($values)
-                ->returning();
+                ->where(sprintf('%s = :%s', $pk, $pk))
+                ->setParameters([
+                    $pk => $pkValue,
+                ])->returning();
         }
 
         if (!$this->driver->inTransaction()) {

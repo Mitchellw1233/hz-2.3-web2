@@ -18,7 +18,7 @@ class ExamRegistration extends BaseEntity implements IdentifierInterface
     private int $id;
     #[FKRelation(targetEntity: Exam::class, targetReferenceColumn: 'id')]
     #[Column(name: 'exam_id', type: 'integer')]
-    private Student $exam;
+    private Exam $exam;
     #[FKRelation(targetEntity: Student::class, targetReferenceColumn: 'id')]
     #[Column(name: 'student_id', type: 'integer')]
     private Student $student;
@@ -30,34 +30,34 @@ class ExamRegistration extends BaseEntity implements IdentifierInterface
     private ?\DateTime $gradedAt;
 
     /**
-     * @param Student $exam
+     * @param Exam $exam
      * @param Student $student
      * @param \DateTime $registrationDate
      * @param float|null $grade
      * @param \DateTime|null $gradedAt
      */
-    public function __construct(Student $exam, Student $student, \DateTime $registrationDate,
+    public function __construct(Exam $exam, Student $student, \DateTime $registrationDate,
                                 ?float $grade, ?\DateTime $gradedAt)
     {
-        $this->exam = $exam;
-        $this->student = $student;
-        $this->registrationDate = $registrationDate;
-        $this->grade = $grade;
-        $this->gradedAt = $gradedAt;
+        $this->setExam($exam);
+        $this->setStudent($student);
+        $this->setRegistrationDate($registrationDate);
+        $this->setGrade($grade);
+        $this->setGradedAt($gradedAt);
     }
 
     /**
-     * @return Student
+     * @return Exam
      */
-    public function getExam(): Student
+    public function getExam(): Exam
     {
         return $this->exam;
     }
 
     /**
-     * @param Student $exam
+     * @param Exam $exam
      */
-    public function setExam(Student $exam): void
+    public function setExam(Exam $exam): void
     {
         $this->exam = $exam;
     }

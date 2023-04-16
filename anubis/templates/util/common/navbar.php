@@ -16,35 +16,25 @@ class NavItem
 {
     public function __construct(
         public string $path,
-        public string $name,
-        public string $active
-    ) {
-    }
-}
-
-class NavCollection
-{
-    public function __construct(
-        public string $path,
-        public string $name,
-        public string $active
+        public string $name
     ) {
     }
 }
 
 $_studentNav = [
-    new NavItem('/', 'Dashboard', $request->getUri()->getPath() === '/'),
-    new NavItem('/grades', 'Cijfers', $request->getUri()->getPath() === '/grades'),
-    new NavItem('/registrations', 'Tentameninschrijvingen', $request->getUri()->getPath() === '/registrations'),
+    new NavItem('/', 'Dashboard'),
+    new NavItem('/grades', 'Cijfers'),
+    new NavItem('/registrations', 'Tentameninschrijvingen'),
 ];
 $_teacherNav = [
-    new NavItem('/', 'Dashboard', $request->getUri()->getPath() === '/'),
-    new NavItem('/admin/exams', 'Tentamens', $request->getUri()->getPath() === '/admin/exams'),
+    new NavItem('/', 'Dashboard'),
+    new NavItem('/admin/exams', 'Tentamens'),
 ];
 $_adminNav = [
-    new NavItem('/', 'Dashboard', $request->getUri()->getPath() === '/'),
-    new NavItem('/admin/exams', 'Tentamens', $request->getUri()->getPath() === '/admin/exams'),
-    new NavItem('/admin/students', 'Studenten', $request->getUri()->getPath() === '/admin/students'),
+    new NavItem('/', 'Dashboard'),
+    new NavItem('/admin/exams', 'Tentamens'),
+    new NavItem('/admin/teachers', 'Leraren'),
+    new NavItem('/admin/students', 'Studenten'),
 ];
 
 if ($user instanceof Student) {
@@ -54,7 +44,7 @@ if ($user instanceof Student) {
 } elseif ($user instanceof Admin) {
     $_nav = $_adminNav;
 } else {
-    $_nav = $_adminNav;  // TODO: REMOVE!!
+    $_nav = [];
 }
 ?>
 
@@ -73,13 +63,23 @@ if ($user instanceof Student) {
                                 <a class="nav-link %s" aria-current="page" href="%s">%s</a>
                             </li>
                         ',
-                        $navItem->active ? 'active' : '',
+                            (str_starts_with($request->getUri()->getPath(), $navItem->path)) ? 'active' : '',
                         $navItem->path,
                         $navItem->name
                         );
                     }
                 ?>
             </ul>
+            <div class="ms-auto">
+                <?php
+                    if ($user !== null) {
+                        echo '<a href="/auth/profile" class="btn btn-secondary">Profiel</a>';
+                        echo '<a href="/auth/logout" class="btn btn-danger ms-2">Uitloggen</a>';
+                    } else {
+                        echo '<a href="/auth/login" class="btn btn-primary">Inloggen</a>';
+                    }
+                ?>
+            </div>
         </div>
     </div>
 </nav>

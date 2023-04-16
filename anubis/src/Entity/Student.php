@@ -22,7 +22,7 @@ class Student extends BaseEntity implements UserInterface, IdentifierInterface
     private string $firstName;
     #[Column(name: 'last_name', type: 'varchar(255)')]
     private string $lastName;
-    #[Column(name: 'email', type: 'varchar(255)')]
+    #[Column(name: 'email', type: 'varchar(255)', unique: true)]
     private string $email;
     #[Column(name: 'password', type: 'varchar(255)')]
     private string $password;
@@ -38,11 +38,11 @@ class Student extends BaseEntity implements UserInterface, IdentifierInterface
      */
     public function __construct(string $firstName, string $lastName, string $email, string $password, \DateTime $birthDate)
     {
-        $this->firstName = $firstName;
-        $this->lastName = $lastName;
-        $this->email = $email;
-        $this->password = $password;
-        $this->birthDate = $birthDate;
+        $this->setFirstName($firstName);
+        $this->setLastName($lastName);
+        $this->setEmail($email);
+        $this->setPassword($password);
+        $this->setBirthDate($birthDate);
     }
 
     /**

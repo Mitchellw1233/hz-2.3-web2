@@ -2,9 +2,11 @@
 
 require __DIR__.'/vendor/autoload.php';
 
+use App\Entity\Admin;
 use Slimfony\DependencyInjection\ContainerBuilder;
 use Slimfony\DependencyInjection\Reference;
 use Slimfony\ORM\SchemaManager;
+use Slimfony\ORM\EntityManager;
 
 /**
  * @var array<string, array{
@@ -24,7 +26,7 @@ $cb->registerAll($services);
 
 $container = $cb->getContainer();
 
-$accepted = ['fresh', 'generate'];
+$accepted = ['fresh', 'generate', 'seed'];
 
 try {
     if (count($argv) < 1 || !in_array($argv[1], $accepted)) {
@@ -36,6 +38,11 @@ try {
         $driver,
         $container->get(\Slimfony\ORM\Resolver\MappingResolver::class),
         $container->get(\Slimfony\Config\ConfigLoader::class),
+    );
+    $em = new EntityManager(
+        $driver,
+        $container->get(\Slimfony\ORM\Resolver\MappingResolver::class),
+        $container->get(\Slimfony\ORM\EntityTransformer::class),
     );
 
     $driver->beginTransaction();
@@ -50,6 +57,14 @@ try {
             echo 'generating database...' . PHP_EOL;
             $sg->generate($entities);
             break;
+        case 'seed':
+            echo 'seeding database...' . PHP_EOL;
+            $rootUser = new Admin(
+                  'root',
+                'root@anubis.com',
+                'root',
+            );
+            $em->persist($rootUser);
     }
 
     $driver->commit();

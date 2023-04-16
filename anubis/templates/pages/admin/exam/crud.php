@@ -1,10 +1,15 @@
 <?php
+
+use App\Entity\ExamRegistration;
+
 include dirname(__DIR__, 3) .'/util/common/ide_helper.php';
 
 /**
  * @var ?\App\Entity\Exam $exam
- * @var ?bool $editable
+ * @var ExamRegistration[] $registrations
  * @var \App\Entity\Teacher[] $teachers
+ * @var ?bool $editable
+ * @var ?array<int, string> $errors
  */
 $title = 'Exam - ' . ($exam?->getName() ?? 'create');
 $metaTitle = 'Exam - ' . ($exam?->getName() ?? 'create') . ' - Admin';
@@ -34,6 +39,13 @@ $editable ??= false;
     <div class="row justify-content-start">
         <div class="col-12 col-md-8 col-xl-6">
             <form method="post">
+                <?php if (!empty($errors)) {
+                    echo sprintf('
+                        <div class="mb-3 text-danger">
+                            <span>%s</span>
+                        </div>
+                    ', $errors);
+                } ?>
                 <div class="mb-3">
                     <label class="form-label fw-semibold">ID</label>
                     <?php echo sprintf('<input class="form-control" name="id" type="text" disabled value="%s">',
@@ -83,6 +95,26 @@ $editable ??= false;
                         $exam?->getCredits() ?? ''
                     );
                     ?>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Students</label>
+                    <?php if ($exam !== null) {
+                        foreach ($registrations as $registration) {
+                            echo sprintf('
+                                <div class="mb-2">
+                                    <label class="form-label me-3">%s - %s %s</label>
+                                    <input class="mb-2 form-control" name="student_grades[%s]" type="number" step="0.1" value="%s" %s>
+                                </div>',
+                                $registration->getStudent()->getId(),
+                                $registration->getStudent()->getName(),
+                                $registration->getGradedAt() === null ? '' : sprintf('(graded at: %s)',
+                                    $registration->getGradedAt()->format('Y-m-d H:i:s')),
+                                $registration->getStudent()->getId(),
+                                $registration->getGrade() ?? '',
+                                $editable ? '' : 'disabled',
+                            );
+                        }
+                    } ?>
                 </div>
                 <?php if ($editable === true) {
                         echo '

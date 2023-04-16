@@ -49,7 +49,7 @@ class RouteResolver
 
             $parameters = [];
             // Check if path matches
-            for ($i = 1; $i < $rpsc; $i++) {
+            for ($i = 0; $i < $rpsc; $i++) {
                 $isDynamic = str_starts_with($rPathSubs[$i], '{');
 
                 // if non-dynamic sub path is not set or not equal to route sub path, no match

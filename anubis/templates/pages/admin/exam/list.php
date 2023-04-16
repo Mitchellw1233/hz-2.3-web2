@@ -3,6 +3,7 @@ include dirname(__DIR__, 3) .'/util/common/ide_helper.php';
 
 /**
  * @var array<int, \App\Entity\Exam> $exams
+ * @var bool $isTeacher
  */
 $title = 'Exams';
 $metaTitle = 'Exams - Admin';
@@ -16,9 +17,12 @@ $metaDescription = $title;
         <div class="col-6">
             <h1><?php echo $title ?></h1>
         </div>
-        <div class="col-6 d-flex justify-content-end align-items-end">
-            <a href="/admin/exams/create" class="btn btn-primary fw-bold px-3">+</a>
-        </div>
+        <?php if (!$isTeacher) {
+            echo '
+            <div class="col-6 d-flex justify-content-end align-items-end">
+                <a href="/admin/exams/create" class="btn btn-primary fw-bold px-3">+</a>
+            </div>
+            '; } ?>
     </div>
     <table class="table" data-table>
         <thead>

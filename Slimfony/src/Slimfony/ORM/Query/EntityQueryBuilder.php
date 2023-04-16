@@ -91,7 +91,7 @@ class EntityQueryBuilder extends AbstractQueryBuilder
 
     public function orderBy(OrderByEnum $order, string ...$columns): static
     {
-        $this->statements[] = 'ORDER BY ' . implode(', ', $columns) . $order->name;
+        $this->statements[] = 'ORDER BY ' . implode(', ', $columns) . ' ' . $order->name;
         return $this;
     }
 }

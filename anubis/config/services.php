@@ -8,7 +8,8 @@ $projectDir = Kernel::getProjectDir();
 /**
  * @var array<string, array{
  *     args?: array<int, mixed|Reference>,
- *     methods?: array<int, array{method: string, args?: array<int, mixed|Reference>}>
+ *     methods?: array<int, array{method: string, args?: array<int, mixed|Reference>}>,
+ *     shared?: bool
  * }> $slimfony
  */
 $slimfony = [
@@ -41,6 +42,9 @@ $slimfony = [
     \Slimfony\HttpKernel\EventListener\RouterListener::class => [
         // RouteResolver
     ],
+    \App\EventListener\AuthListener::class => [
+        // RouteResolver
+    ],
     \Slimfony\EventDispatcher\EventDispatcher::class => [
         'methods' => [
             ['method' => 'addSubscriber', 'args' => [
@@ -56,14 +60,42 @@ $slimfony = [
     ],
 ];
 
+// TODO: topological sort fixes this problem
 /**
  * @var array<string, array{
  *     args?: array<int, mixed|Reference>,
- *     methods?: array<int, array{method: string, args?: array<int, mixed|Reference>}>
+ *     methods?: array<int, array{method: string, args?: array<int, mixed|Reference>}>,
+ *     shared?: bool,
  * }> $anubis
  */
 $anubis = [
+    \Slimfony\EventDispatcher\EventDispatcher::class => [
+        'methods' => [
+            ['method' => 'addSubscriber', 'args' => [
+                new Reference(\App\EventListener\AuthListener::class),
+            ]],
+        ],
+    ],
+    \App\Controller\HomeController::class => [
+        // Container
+    ],
+    \App\Controller\Auth\AuthController::class => [
+        // Container
+    ],
     \App\Controller\Admin\ExamController::class => [
+        // Container
+    ],
+    \App\Controller\Admin\TeacherController::class => [
+        // Container
+    ],
+    \App\Controller\Admin\StudentController::class => [
+        // Container
+    ],
+
+    \App\Controller\Student\GradeController::class => [
+        // Container
+    ],
+    \App\Controller\Student\RegistrationController::class => [
         // Container
     ],
 ];
@@ -74,4 +106,4 @@ $anubis = [
  *     methods?: array<int, array{method: string, args?: array<int, mixed|Reference>}>
  * }>
  */
-return [...$slimfony, ...$anubis];
+return array_merge_recursive($slimfony, $anubis);
