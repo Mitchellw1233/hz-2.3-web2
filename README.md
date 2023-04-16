@@ -1,4 +1,7 @@
 # Slimfony
+### Authors
+- Mitchell Wolters
+- Koen Beerta
 ### Starting
 ```
 docker compose up -d
