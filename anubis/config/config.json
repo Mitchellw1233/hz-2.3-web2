@@ -105,14 +105,14 @@
       ]
     },
     "student.registration.register": {
-      "path": "/registrations/{exam}/register",
+      "path": "/registrations/{id}/register",
       "controller": "App\\Controller\\Student\\RegistrationController::register",
       "methods": [
         "GET"
       ]
     },
     "student.registration.deregister": {
-      "path": "/registrations/{registration}/delete",
+      "path": "/registrations/{id}/deregister",
       "controller": "App\\Controller\\Student\\RegistrationController::delete",
       "methods": [
         "GET"

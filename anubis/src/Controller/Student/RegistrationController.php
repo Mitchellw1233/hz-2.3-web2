@@ -29,45 +29,63 @@ class RegistrationController extends AbstractStudentController
         }
 
         // TODO: REMOVE
-        $id = 5;
-//        $id = $this->getUser()->getId();
+        $studentId = 5;
+//        $studentId = $this->getUser()->getId();
 
         return $this->render('pages/student/registration/list.php', [
             'all' => $this->entityManager->getQueryBuilder(ExamRegistration::class)->result(),
             'registrations' => $this->entityManager->getQueryBuilder(ExamRegistration::class)
                 ->where('student_id = :id')
                 ->setParameters([
-                    'id' => $id,
+                    'id' => $studentId,
                 ])
                 ->result(),
             'exams' => $this->entityManager->getQueryBuilder(Exam::class)->result(),
         ]);
     }
 
-    public function delete(ExamRegistration $registration): void
+    public function delete(int $id): Response
     {
+        $registration = $this->entityManager->getQueryBuilder(ExamRegistration::class)
+            ->where('id = :id')
+            ->setParameters([
+                'id' => $id
+            ])
+            ->limit(1)
+            ->result();
         $this->entityManager->remove($registration);
+        $this->entityManager->flush();
+
+        return $this->redirectToRoute('student.registration.list');
     }
 
-    public function register(Exam $exam): void
+    public function register(int $id): Response
     {
         if (!$this->verify()) {
             throw new ForbiddenException();
         }
 
         // TODO: REMOVE
-        $id = 5;
-//        $id = $this->getUser()->getId();
+        $studentId = 5;
+//        $studentId = $this->getUser()->getId();
 
         // TODO: REMOVE
         $student = $this->entityManager->getQueryBuilder(Student::class)
             ->where('id = :id')
             ->setParameters([
-                'id' => $id,
+                'id' => $studentId,
             ])
             ->limit(1)
             ->result();
 //        $student = $this->getUser();
+
+        $exam = $this->entityManager->getQueryBuilder(Exam::class)
+            ->where('id = :id')
+            ->setParameters([
+                'id' => $id
+            ])
+            ->limit(1)
+            ->result();
 
         $registration = new ExamRegistration(
             $exam,
@@ -79,5 +97,7 @@ class RegistrationController extends AbstractStudentController
 
         $this->entityManager->persist($registration);
         $this->entityManager->flush();
+
+        return $this->redirectToRoute('student.registration.list');
     }
 }
