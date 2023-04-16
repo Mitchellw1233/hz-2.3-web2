@@ -69,7 +69,6 @@ class AuthListener implements EventSubscriberInterface
             return null;
         }
 
-        return unserialize($request->getSession()->get('_user'),
-            ['allowed_classes' => [Student::class, Teacher::class, Admin::class]]);
+        return unserialize($request->getSession()->get('_user'));
     }
 }

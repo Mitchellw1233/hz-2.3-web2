@@ -36,8 +36,22 @@ class ExamController extends AbstractAdminController
 
     public function list(): Response
     {
+        $isTeacher = false;
+        $user = $this->getUser();
+        $query = $this->entityManager->getQueryBuilder(Exam::class);
+
+        // If teacher, only exams controlled by teacher
+        if ($user instanceof Teacher) {
+            $isTeacher = true;
+            $query->where('teacher_id = :id')
+                ->setParameters([
+                    'id' => $user->getId(),
+                ]);
+        }
+
         return $this->render('pages/admin/exam/list.php', [
-            'exams' => $this->entityManager->getQueryBuilder(Exam::class)->result(),
+            'exams' => $query->result(),
+            'isTeacher' => $isTeacher,
         ]);
     }
 

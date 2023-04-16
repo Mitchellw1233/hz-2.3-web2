@@ -1,6 +1,8 @@
 <?php
 
 use App\Entity\Interface\UserInterface;
+use App\Entity\Student;
+use App\Entity\Teacher;
 
 include dirname(__DIR__, 2) .'/util/common/ide_helper.php';
 
@@ -8,7 +10,9 @@ include dirname(__DIR__, 2) .'/util/common/ide_helper.php';
  * @var UserInterface $user
  * @var ?array<int, string> $errors
  */
-$title = 'Profiel';
+$userType = $user instanceof Student ? 'Student' :
+    ($user instanceof Teacher ? 'Leraar' : 'Administrator');
+$title = 'Profiel - ' . $userType;
 $metaTitle = $title;
 $metaDescription = $title;
 ?>
@@ -32,7 +36,7 @@ $metaDescription = $title;
                     ', $errors);
                 } ?>
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">Studentnummer</label>
+                    <label class="form-label fw-semibold"><?php echo $userType ?> Nr</label>
                     <?php echo sprintf('<input class="form-control" type="number" disabled value="%s">',
                         $user->getId(),
                     ) ?>

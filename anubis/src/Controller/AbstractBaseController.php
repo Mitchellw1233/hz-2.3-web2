@@ -26,7 +26,6 @@ class AbstractBaseController extends AbstractSlimfonyController
             return null;
         }
 
-        return unserialize($this->getRequest()->getSession()->get('_user'),
-            ['allowed_classes' => [Student::class, Teacher::class, Admin::class]]);
+        return unserialize($this->getRequest()->getSession()->get('_user'));
     }
 }
