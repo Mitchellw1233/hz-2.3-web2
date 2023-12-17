@@ -1,7 +1,14 @@
-# Slimfony
+# Slimfony & Anubis
+Slimfony is a backend framework including its own ORM, dependency injection, simple templating engine and more (all self-made). Inspired by Symfony and Doctrine ORM.
+
+Anubis is a website using the Slimfony framework as a PoC for Slimfony (fully operational). It's a school system for assigning and grading students to specific subjects, accessable for both students, teachers and admins.
+
+The assignment from school in a nutshell: *Make a fully self-made framework in PHP with ORM and templating engine etc. Use this framework to make a school system website for grading students.*
+
 ### Authors
 - Mitchell Wolters
 - Koen Beerta
+
 ### Starting
 ```
 docker compose up -d
